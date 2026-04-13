@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأخصائي النفسي | نظام متابعة السلوك</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0B2545;--navy2:#163A6B;--bg:#F0F2F8;--surface:#fff;--surface2:#F5F7FC;--surface3:#ECEEF7;--border:#DDE1F0;--border2:#C8CEDF;--text1:#0B1A2E;--text2:#4A5578;--text3:#8892B0;--blue:#1A56DB;--blue-l:#EBF0FF;--green:#0A7A4A;--green-l:#E8F9F1;--red:#B91C1C;--red-l:#FEF2F2;--amber:#B05E0A;--amber-l:#FFF5E6;--purple:#5B21B6;--purple-l:#F2EEFF;--teal:#0C7872;--teal-l:#E6FAF8;--r:10px;--r-sm:6px;--sh:0 2px 12px rgba(11,37,69,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text1);font-size:14px;min-height:100vh;display:flex}
+.sb{width:230px;flex-shrink:0;background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;right:0;bottom:0;z-index:100}
+.sb-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.sb-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#0C7872,#0F766E);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sb-logo-name{font-size:12px;font-weight:700;color:white}.sb-logo-sub{font-size:10px;color:rgba(255,255,255,.45);margin-top:1px}
+.sb-user{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px}
+.sb-av{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#5DCAA5;flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:600;color:white}.sb-urole{font-size:11px;color:rgba(255,255,255,.5)}
+.sb-nav{flex:1;padding:8px;overflow-y:auto}
+.sb-sec-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.3);padding:4px 8px 6px;letter-spacing:1px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:rgba(255,255,255,.6);font-size:13px;font-weight:500;transition:all .15s;margin-bottom:2px;position:relative}
+.sb-item:hover{background:rgba(255,255,255,.08);color:white}
+.sb-item.active{background:rgba(255,255,255,.12);color:white}
+.sb-item.active::before{content:'';position:absolute;right:0;top:6px;bottom:6px;width:3px;background:#5DCAA5;border-radius:0 3px 3px 0}
+.sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.sb-badge{margin-right:auto;background:var(--red);color:white;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px}
+.sb-footer{padding:10px;border-top:1px solid rgba(255,255,255,.07)}
+.sb-logout{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:rgba(255,255,255,.5);font-size:13px;transition:all .15s}
+.sb-logout:hover{color:#FC8181;background:rgba(252,129,129,.08)}
+.main{margin-right:230px;flex:1;display:flex;flex-direction:column}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-left h1{font-size:15px;font-weight:700}.tb-left p{font-size:11px;color:var(--text3);margin-top:2px}
+.tb-right{display:flex;gap:8px}
+.tb-btn{width:34px;height:34px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text2);transition:all .15s}
+.tb-btn:hover{background:var(--navy);color:white;border-color:var(--navy)}
+.content{padding:20px 24px;flex:1}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.card-header{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-title{font-size:14px;font-weight:700}.card-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.two-col{display:grid;grid-template-columns:280px 1fr;gap:16px;align-items:start}
+.case-list{overflow-y:auto;max-height:calc(100vh - 200px)}
+.case-item{padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+.case-item:hover{background:var(--surface2)}.case-item.active{background:var(--teal-l);border-right:3px solid var(--teal)}
+.case-name{font-size:13px;font-weight:700}.case-meta{font-size:11px;color:var(--text2);margin-top:2px}
+.case-chips{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.chip-red{background:var(--red-l);color:var(--red)}.chip-amber{background:var(--amber-l);color:var(--amber)}.chip-green{background:var(--green-l);color:var(--green)}.chip-blue{background:var(--blue-l);color:var(--blue)}.chip-teal{background:var(--teal-l);color:var(--teal)}.chip-navy{background:#E8EDF7;color:var(--navy)}.chip-new{background:var(--red-l);color:var(--red);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+.btn{padding:8px 16px;border-radius:var(--r-sm);font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:6px}
+.btn-teal{background:var(--teal);color:white}.btn-teal:hover{background:#0a5e59}
+.btn-navy{background:var(--navy);color:white}.btn-navy:hover{background:var(--navy2)}
+.btn-green{background:var(--green);color:white}.btn-green:hover{background:#076b3c}
+.btn-outline{background:var(--surface);color:var(--text2);border:1.5px solid var(--border2)}.btn-outline:hover{background:var(--surface2);border-color:var(--navy);color:var(--navy)}
+.btn-sm{padding:5px 12px;font-size:11px}
+.form-group{margin-bottom:12px}.form-lbl{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;display:block}
+.form-ctrl{width:100%;padding:8px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--surface2);font-family:'Cairo',sans-serif;font-size:13px;color:var(--text1);outline:none;direction:rtl;transition:all .15s}
+.form-ctrl:focus{border-color:var(--navy2);background:white;box-shadow:0 0 0 3px rgba(11,37,69,.1)}
+.form-ta{width:100%;padding:8px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--surface2);font-family:'Cairo',sans-serif;font-size:13px;color:var(--text1);outline:none;direction:rtl;resize:none;min-height:70px;transition:all .15s}
+.form-ta:focus{border-color:var(--navy2);background:white}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tl{padding:14px 18px}
+.tl-item{display:flex;gap:10px;margin-bottom:12px;position:relative}
+.tl-item:not(:last-child)::before{content:'';position:absolute;right:13px;top:26px;bottom:-4px;width:1px;background:var(--border)}
+.tl-icon{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;background:var(--surface3);border:1px solid var(--border)}
+.tl-body{flex:1;background:var(--surface2);border-radius:var(--r-sm);padding:8px 12px}
+.tl-head{display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap}
+.tl-actor{font-size:12px;font-weight:700}.tl-time{font-size:11px;color:var(--text3);margin-right:auto}
+.tl-text{font-size:12px;color:var(--text2);line-height:1.5}
+.sess-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px}
+.sess-num{font-size:20px;font-weight:800;color:var(--teal)}.sess-type{font-size:12px;font-weight:600;margin-top:2px}.sess-date{font-size:11px;color:var(--text3);margin-top:2px}.sess-notes{font-size:12px;color:var(--text2);margin-top:6px;line-height:1.5}
+#toast{position:fixed;bottom:20px;left:20px;background:var(--navy);color:white;padding:11px 18px;border-radius:var(--r-sm);font-size:13px;font-weight:500;box-shadow:0 8px 24px rgba(11,37,69,.3);z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;max-width:340px}
+#toast.show{transform:translateY(0);opacity:1}#toast.ok{background:var(--green)}#toast.err{background:var(--red)}
+@media(max-width:1000px){.sb{display:none}.main{margin-right:0}.two-col{grid-template-columns:1fr}}
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,doc,addDoc,getDoc,getDocs,updateDoc,query,where,orderBy,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyC3aj0-1niPU738buidi_7qJq_XzJ143yo",authDomain:"student-behavior-7bd27.firebaseapp.com",projectId:"student-behavior-7bd27",storageBucket:"student-behavior-7bd27.firebasestorage.app",messagingSenderId:"401144670363",appId:"1:401144670363:web:7b6cda0938be4aa763fe3e"});
+window.$db=getFirestore(app);window.$fb={collection,doc,addDoc,getDoc,getDocs,updateDoc,query,where,orderBy,serverTimestamp};window.$fbReady=true;
+</script>
+</head>
+<body>
+<aside class="sb">
+  <div class="sb-logo"><div class="sb-logo-icon">🧠</div><div><div class="sb-logo-name">نظام المتابعة</div><div class="sb-logo-sub">الطلابية السلوكية</div></div></div>
+  <div class="sb-user"><div class="sb-av" id="sb-av">أ</div><div><div class="sb-uname" id="sb-name">الأخصائي</div><div class="sb-urole">أخصائي نفسي</div></div></div>
+  <nav class="sb-nav">
+    <div class="sb-sec-lbl">الحالات</div>
+    <div class="sb-item active" id="sbt-cases"   onclick="switchTab('cases')"><span class="sb-icon">📥</span>حالات محالة<span class="sb-badge" id="badge-cases">0</span></div>
+    <div class="sb-item"        id="sbt-sessions" onclick="switchTab('sessions')"><span class="sb-icon">🗓️</span>تسجيل جلسة</div>
+    <div class="sb-item"        id="sbt-closed"   onclick="switchTab('closed')"><span class="sb-icon">✅</span>مغلقة</div>
+  </nav>
+  <div class="sb-footer"><div class="sb-logout" onclick="logout()"><span class="sb-icon">🚪</span>تسجيل الخروج</div></div>
+</aside>
+<div class="main">
+  <div class="topbar">
+    <div class="tb-left"><h1 id="tb-title">الحالات المحالة</h1><p id="tb-sub"></p></div>
+    <div class="tb-right"><div class="tb-btn" onclick="refreshCurrent()">🔄</div></div>
+  </div>
+  <div class="content" id="content"><div style="text-align:center;padding:50px;color:var(--text3)">⏳</div></div>
+</div>
+<div id="toast"></div>
+<script>
+const sess=JSON.parse(sessionStorage.getItem('sbs_user')||'null');
+if(!sess||sess.role!=='psychologist'){window.location.href='login.html';throw new Error();}
+document.getElementById('sb-av').textContent=(sess.name||'').charAt(0)||'أ';
+document.getElementById('sb-name').textContent=sess.name||'الأخصائي';
+
+const DEGBG={1:'#EBF0FF',2:'#E8F9F1',3:'#FFF5E6',4:'#FEF2F2'};
+const DEGCL={1:'#1A56DB',2:'#0A7A4A',3:'#B05E0A',4:'#B91C1C'};
+const DEGNM={1:'١',2:'٢',3:'٣',4:'٤'};
+let _curTab='cases',_curCaseId=null;
+
+function switchTab(tab){
+  _curTab=tab;_curCaseId=null;
+  ['cases','sessions','closed'].forEach(t=>{const el=document.getElementById('sbt-'+t);if(el)el.classList.toggle('active',t===tab);});
+  const titles={cases:'الحالات المحالة',sessions:'تسجيل جلسة',closed:'الحالات المغلقة'};
+  document.getElementById('tb-title').textContent=titles[tab]||tab;
+  if(tab==='cases'||tab==='closed')loadCases(tab);
+  else if(tab==='sessions')loadSessionsForm();
+}
+function refreshCurrent(){switchTab(_curTab);}
+
+async function loadCases(tab){
+  const el=document.getElementById('content');
+  el.innerHTML='<div style="text-align:center;padding:50px;color:var(--text3)">⏳</div>';
+  if(!window.$fbReady){el.innerHTML='<div class="card" style="padding:30px;text-align:center;color:var(--red)">Firebase غير متصل</div>';return;}
+  try{
+    let q;
+    if(tab==='closed') q=window.$fb.query(window.$fb.collection(window.$db,'cases'),window.$fb.where('stage','==','psychologist'),window.$fb.where('status','==','closed'));
+    else q=window.$fb.query(window.$fb.collection(window.$db,'cases'),window.$fb.where('stage','==','psychologist'),window.$fb.where('status','!=',' closed'));
+    const snap=await window.$fb.getDocs(q);
+    const cases=snap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>tab==='closed'?c.status==='closed':c.status!=='closed');
+    if(tab==='cases'){const b=document.getElementById('badge-cases');if(b)b.textContent=cases.length||'0';}
+    document.getElementById('tb-sub').textContent=`${cases.length} حالة`;
+    if(cases.length===0){el.innerHTML=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:36px;margin-bottom:12px">✅</div><div style="font-size:15px;font-weight:700">لا توجد حالات</div></div>`;return;}
+    el.innerHTML=`<div class="two-col">
+      <div class="card"><div class="card-header"><div class="card-title">قائمة الحالات</div><span style="font-size:12px;color:var(--text3)">${cases.length}</span></div>
+        <div class="case-list">${cases.map(c=>`
+          <div class="case-item ${_curCaseId===c.id?'active':''}" id="ci-${c.id}" onclick="openCase('${c.id}')">
+            <div class="case-name">${c.studentName||c.studentId}</div>
+            <div class="case-meta">${c.classId||''} · ${c.referredToByName||c.referredBy||'—'}</div>
+            <div class="case-chips">
+              <span class="chip chip-${c.degree>=4?'red':c.degree>=3?'amber':'navy'}">${c.degree>=4?'عالية':c.degree>=3?'متوسطة':'منخفضة'}</span>
+              ${c.consultType?`<span class="chip chip-teal" style="font-size:10px">${c.consultType}</span>`:''}
+              ${c.priority==='urgent'?'<span class="chip chip-red">عاجل</span>':c.priority==='high'?'<span class="chip chip-amber">مرتفع</span>':''}
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div id="case-detail"><div style="padding:40px;text-align:center;color:var(--text3)"><div style="font-size:32px;margin-bottom:10px">🧠</div>اختر حالة لعرض التفاصيل</div></div>
+    </div>`;
+  }catch(e){el.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;}
+}
+
+async function openCase(id){
+  _curCaseId=id;
+  document.querySelectorAll('.case-item').forEach(el=>el.classList.remove('active'));
+  const ciEl=document.getElementById('ci-'+id);if(ciEl)ciEl.classList.add('active');
+  const det=document.getElementById('case-detail');
+  if(!det)return;
+  det.innerHTML='<div style="text-align:center;padding:30px;color:var(--text3)">⏳</div>';
+  try{
+    const snap=await window.$fb.getDoc(window.$fb.doc(window.$db,'cases',id));
+    const c={id:snap.id,...snap.data()};
+    const sessSnap=await window.$fb.getDocs(window.$fb.query(window.$fb.collection(window.$db,'sessions'),window.$fb.where('caseId','==',id),window.$fb.orderBy('createdAt','asc')));
+    const sessions=sessSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const tl=c.timeline||[];
+    det.innerHTML=`<div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card">
+        <div style="padding:18px 20px;display:flex;gap:14px;align-items:flex-start">
+          <div style="width:44px;height:44px;border-radius:10px;background:${DEGBG[c.degree||1]};color:${DEGCL[c.degree||1]};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0">${DEGNM[c.degree||1]}</div>
+          <div style="flex:1">
+            <div style="font-size:17px;font-weight:700">${c.studentName}</div>
+            <div style="font-size:12px;color:var(--text2)">${c.classId||''}</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+              <span class="chip chip-${c.status==='closed'?'green':'teal'}">${c.status==='closed'?'مغلق':'جارٍ'}</span>
+              ${c.consultType?`<span class="chip chip-navy">${c.consultType}</span>`:''}
+              <span class="chip chip-navy">${sessions.length} جلسة</span>
+            </div>
+          </div>
+          ${c.status!=='closed'?`<button class="btn btn-green btn-sm" onclick="closeCase('${id}')">✓ إغلاق</button>`:''}
+        </div>
+        <div style="margin:0 18px 14px;background:var(--teal-l);border:1px solid #99E8E0;border-radius:var(--r-sm);padding:10px 14px;font-size:12px;color:var(--teal);line-height:1.7">
+          <strong>سبب التحويل:</strong> ${c.psychReason||c.escalationReason||'—'}<br>
+          <strong>محوِّل:</strong> ${c.referredToByName||c.referredBy||'—'}
+        </div>
+      </div>
+      ${sessions.length>0?`<div class="card"><div class="card-header"><div class="card-title">الجلسات المسجلة</div><span style="font-size:12px;color:var(--text3)">${sessions.length}</span></div>
+        <div style="padding:14px 18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
+          ${sessions.map((s,i)=>`<div class="sess-card">
+            <div class="sess-num">${i+1}</div>
+            <div class="sess-type">${s.type||'جلسة'}</div>
+            <div class="sess-date">${s.date||''} · ${s.duration||''}</div>
+            <div class="sess-notes">${s.notes||''}</div>
+            <div style="margin-top:6px"><span class="chip chip-${s.outcome?.includes('إيجاب')?'green':'amber'}" style="font-size:10px">${s.outcome||'—'}</span></div>
+          </div>`).join('')}
+        </div>
+      </div>`:''}
+      <div class="card"><div class="card-header"><div class="card-title">السجل الكامل</div></div>
+        <div class="tl">${tl.map(t=>`
+          <div class="tl-item">
+            <div class="tl-icon">👤</div>
+            <div class="tl-body">
+              <div class="tl-head"><span class="tl-actor">${t.actor}</span><span class="chip chip-navy" style="font-size:10px">${t.action}</span><span class="tl-time">${t.time?new Date(t.time).toLocaleDateString('ar-QA'):''}</span></div>
+              ${t.notes?`<div class="tl-text">${t.notes}</div>`:''}
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+      ${c.status!=='closed'?`<div class="card"><div class="card-header"><div class="card-title">تسجيل جلسة جديدة</div></div>
+        <div style="padding:14px 18px">
+          <div class="form-grid-2" style="margin-bottom:8px">
+            <div class="form-group"><label class="form-lbl">نوع الجلسة</label>
+              <select class="form-ctrl" id="sess-type-${id}"><option>جلسة تقييم نفسي</option><option>جلسة دعم نفسي</option><option>جلسة سلوكية معرفية</option><option>جلسة إرشادية</option><option>جلسة متابعة</option></select>
+            </div>
+            <div class="form-group"><label class="form-lbl">المدة</label>
+              <select class="form-ctrl" id="sess-dur-${id}"><option>30 دقيقة</option><option>45 دقيقة</option><option>60 دقيقة</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-lbl">نتيجة الجلسة</label>
+            <select class="form-ctrl" id="sess-out-${id}"><option>إيجابي — تفاعل جيد</option><option>محايد — يحتاج متابعة</option><option>يحتاج جلسات مكثفة</option></select>
+          </div>
+          <div class="form-group"><label class="form-lbl">ملاحظات الجلسة</label><textarea class="form-ta" id="sess-notes-${id}" placeholder="وصف ما تم في الجلسة..."></textarea></div>
+          <button class="btn btn-teal btn-sm" onclick="saveSession('${id}','${c.studentId}','${c.studentName}')">💾 حفظ الجلسة</button>
+        </div>
+      </div>`:''}
+    </div>`;
+  }catch(e){det.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;}
+}
+
+async function saveSession(caseId,studentId,studentName){
+  const type=document.getElementById(`sess-type-${caseId}`)?.value;
+  const duration=document.getElementById(`sess-dur-${caseId}`)?.value;
+  const outcome=document.getElementById(`sess-out-${caseId}`)?.value;
+  const notes=document.getElementById(`sess-notes-${caseId}`)?.value||'';
+  if(!notes){toast('⚠️ أدخل ملاحظات الجلسة','err');return;}
+  const today=new Date().toISOString().split('T')[0];
+  try{
+    await window.$fb.addDoc(window.$fb.collection(window.$db,'sessions'),{caseId,studentId,studentName,type,duration,outcome,notes,date:today,createdBy:sess.id,createdByName:sess.name,createdAt:window.$fb.serverTimestamp()});
+    const snap=await window.$fb.getDoc(window.$fb.doc(window.$db,'cases',caseId));
+    const tl=[...(snap.data()?.timeline||[]),{actor:sess.name,role:'psychologist',action:`جلسة: ${type}`,notes:`${outcome} — ${notes}`,time:new Date().toISOString()}];
+    await window.$fb.updateDoc(window.$fb.doc(window.$db,'cases',caseId),{timeline:tl,status:'followup',updatedAt:window.$fb.serverTimestamp()});
+    toast('✅ تم حفظ الجلسة','ok');
+    openCase(caseId);
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+async function closeCase(id){
+  try{
+    const snap=await window.$fb.getDoc(window.$fb.doc(window.$db,'cases',id));
+    const tl=[...(snap.data()?.timeline||[]),{actor:sess.name,role:'psychologist',action:'إغلاق الحالة',time:new Date().toISOString()}];
+    await window.$fb.updateDoc(window.$fb.doc(window.$db,'cases',id),{status:'closed',closedAt:window.$fb.serverTimestamp(),timeline:tl});
+    toast('✅ تم إغلاق الحالة','ok');
+    switchTab(_curTab);
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+async function loadSessionsForm(){
+  const el=document.getElementById('content');
+  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)">⏳</div>';
+  try{
+    const snap=await window.$fb.getDocs(window.$fb.query(window.$fb.collection(window.$db,'cases'),window.$fb.where('stage','==','psychologist'),window.$fb.where('status','!=','closed')));
+    const cases=snap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>c.status!=='closed');
+    el.innerHTML=`<div class="card" style="max-width:560px"><div class="card-header"><div class="card-title">تسجيل جلسة جديدة</div></div>
+      <div style="padding:16px 18px">
+        <div class="form-group"><label class="form-lbl">اختر الحالة</label>
+          <select class="form-ctrl" id="quick-case">${cases.length?cases.map(c=>`<option value="${c.id}">${c.studentName} (${c.classId||''})</option>`).join(''):'<option>لا توجد حالات نشطة</option>'}</select>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group"><label class="form-lbl">نوع الجلسة</label>
+            <select class="form-ctrl" id="quick-type"><option>جلسة تقييم نفسي</option><option>جلسة دعم نفسي</option><option>جلسة سلوكية معرفية</option><option>جلسة إرشادية</option><option>جلسة متابعة</option></select>
+          </div>
+          <div class="form-group"><label class="form-lbl">المدة</label>
+            <select class="form-ctrl" id="quick-dur"><option>30 دقيقة</option><option>45 دقيقة</option><option>60 دقيقة</option></select>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-lbl">نتيجة الجلسة</label>
+          <select class="form-ctrl" id="quick-out"><option>إيجابي — تفاعل جيد</option><option>محايد — يحتاج متابعة</option><option>يحتاج جلسات مكثفة</option></select>
+        </div>
+        <div class="form-group"><label class="form-lbl">ملاحظات</label><textarea class="form-ta" id="quick-notes" placeholder="ما تم في الجلسة..."></textarea></div>
+        <button class="btn btn-teal" onclick="saveQuickSession()">💾 حفظ الجلسة</button>
+      </div>
+    </div>`;
+  }catch(e){el.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;}
+}
+
+async function saveQuickSession(){
+  const caseId=document.getElementById('quick-case')?.value;
+  const type=document.getElementById('quick-type')?.value;
+  const duration=document.getElementById('quick-dur')?.value;
+  const outcome=document.getElementById('quick-out')?.value;
+  const notes=document.getElementById('quick-notes')?.value||'';
+  if(!caseId){toast('⚠️ اختر حالة','err');return;}
+  if(!notes){toast('⚠️ أدخل الملاحظات','err');return;}
+  const cSnap=await window.$fb.getDoc(window.$fb.doc(window.$db,'cases',caseId));
+  const c=cSnap.data();
+  const today=new Date().toISOString().split('T')[0];
+  try{
+    await window.$fb.addDoc(window.$fb.collection(window.$db,'sessions'),{caseId,studentId:c.studentId,studentName:c.studentName,type,duration,outcome,notes,date:today,createdBy:sess.id,createdByName:sess.name,createdAt:window.$fb.serverTimestamp()});
+    const tl=[...(c.timeline||[]),{actor:sess.name,role:'psychologist',action:`جلسة: ${type}`,notes:`${outcome} — ${notes}`,time:new Date().toISOString()}];
+    await window.$fb.updateDoc(window.$fb.doc(window.$db,'cases',caseId),{timeline:tl,status:'followup',updatedAt:window.$fb.serverTimestamp()});
+    toast('✅ تم حفظ الجلسة','ok');
+    document.getElementById('quick-notes').value='';
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='show'+(type?' '+type:'');clearTimeout(el._t);el._t=setTimeout(()=>el.className='',3500);}
+function logout(){sessionStorage.removeItem('sbs_user');window.location.href='login.html';}
+switchTab('cases');
+</script>
+</body>
+</html>

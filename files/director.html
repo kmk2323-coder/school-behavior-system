@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شاشة المدير | نظام متابعة السلوك</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0B2545;--navy2:#163A6B;--gold:#C9913A;--bg:#F0F2F8;--surface:#fff;--surface2:#F5F7FC;--surface3:#ECEEF7;--border:#DDE1F0;--border2:#C8CEDF;--text1:#0B1A2E;--text2:#4A5578;--text3:#8892B0;--blue:#1A56DB;--blue-l:#EBF0FF;--green:#0A7A4A;--green-l:#E8F9F1;--red:#B91C1C;--red-l:#FEF2F2;--amber:#B05E0A;--amber-l:#FFF5E6;--purple:#5B21B6;--purple-l:#F2EEFF;--teal:#0C7872;--teal-l:#E6FAF8;--r:10px;--r-sm:6px;--sh:0 2px 12px rgba(11,37,69,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text1);font-size:14px;min-height:100vh;display:flex}
+.sb{width:230px;flex-shrink:0;background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;right:0;bottom:0;z-index:100}
+.sb-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.sb-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),#E8B85A);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sb-logo-name{font-size:12px;font-weight:700;color:white}.sb-logo-sub{font-size:10px;color:rgba(255,255,255,.45);margin-top:1px}
+.sb-user{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px}
+.sb-av{width:36px;height:36px;border-radius:50%;background:rgba(201,145,58,.25);border:1.5px solid rgba(201,145,58,.4);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#E8B85A;flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:600;color:white}.sb-urole{font-size:11px;color:rgba(255,255,255,.5)}
+.sb-nav{flex:1;padding:8px;overflow-y:auto}
+.sb-sec-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.3);padding:4px 8px 6px;letter-spacing:1px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:rgba(255,255,255,.6);font-size:13px;font-weight:500;transition:all .15s;margin-bottom:2px;position:relative}
+.sb-item:hover{background:rgba(255,255,255,.08);color:white}
+.sb-item.active{background:rgba(255,255,255,.12);color:white}
+.sb-item.active::before{content:'';position:absolute;right:0;top:6px;bottom:6px;width:3px;background:#E8B85A;border-radius:0 3px 3px 0}
+.sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.sb-footer{padding:10px;border-top:1px solid rgba(255,255,255,.07)}
+.sb-logout{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:rgba(255,255,255,.5);font-size:13px;transition:all .15s}
+.sb-logout:hover{color:#FC8181;background:rgba(252,129,129,.08)}
+.main{margin-right:230px;flex:1;display:flex;flex-direction:column}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-left h1{font-size:15px;font-weight:700}.tb-left p{font-size:11px;color:var(--text3);margin-top:2px}
+.tb-right{display:flex;gap:8px;align-items:center}
+.tb-btn{width:34px;height:34px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text2);transition:all .15s}
+.tb-btn:hover{background:var(--navy);color:white;border-color:var(--navy)}
+.content{padding:20px 24px;flex:1}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.card-header{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-title{font-size:14px;font-weight:700}.card-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.stat::after{content:'';position:absolute;top:0;right:0;width:4px;height:100%}
+.stat.red::after{background:var(--red)}.stat.amber::after{background:var(--amber)}.stat.blue::after{background:var(--blue)}.stat.purple::after{background:var(--purple)}.stat.green::after{background:var(--green)}.stat.teal::after{background:var(--teal)}.stat.navy::after{background:var(--navy)}
+.stat-icon{font-size:18px;margin-bottom:6px}.stat-lbl{font-size:11px;color:var(--text2);font-weight:500;margin-bottom:4px}.stat-val{font-size:26px;font-weight:800;line-height:1}.stat-sub{font-size:10px;color:var(--text3);margin-top:3px}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr)}
+.pipe-col{padding:13px 15px;border-left:1px solid var(--border)}
+.pipe-col:last-child{border-left:none}
+.pipe-title{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.pipe-cnt{font-size:18px;font-weight:800}
+.pipe-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 11px;margin-bottom:7px;cursor:pointer;transition:all .15s}
+.pipe-card:hover{background:var(--blue-l);border-color:var(--navy)}
+.pipe-card-name{font-size:12px;font-weight:700}.pipe-card-meta{font-size:11px;color:var(--text2)}
+.pipe-card-chips{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.chip-red{background:var(--red-l);color:var(--red)}.chip-amber{background:var(--amber-l);color:var(--amber)}.chip-green{background:var(--green-l);color:var(--green)}.chip-blue{background:var(--blue-l);color:var(--blue)}.chip-purple{background:var(--purple-l);color:var(--purple)}.chip-teal{background:var(--teal-l);color:var(--teal)}.chip-navy{background:#E8EDF7;color:var(--navy)}
+.tbl-wrap{overflow-x:auto}.tbl{width:100%;border-collapse:collapse}
+.tbl th{background:var(--surface3);padding:9px 14px;font-size:11px;font-weight:600;color:var(--text2);text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl td{padding:9px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:var(--surface2);cursor:pointer}
+.btn{padding:8px 16px;border-radius:var(--r-sm);font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:6px}
+.btn-navy{background:var(--navy);color:white}.btn-navy:hover{background:var(--navy2)}
+.btn-outline{background:var(--surface);color:var(--text2);border:1.5px solid var(--border2)}.btn-outline:hover{background:var(--surface2);border-color:var(--navy);color:var(--navy)}
+.btn-sm{padding:5px 12px;font-size:11px}
+.risk-item{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .12s}
+.risk-item:hover{background:var(--surface2)}.risk-item:last-child{border-bottom:none}
+.risk-bar-wrap{width:100%;height:4px;background:var(--surface3);border-radius:4px;margin-top:4px}
+.risk-bar{height:4px;border-radius:4px}
+.filter-sel{padding:6px 10px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface2);font-family:'Cairo',sans-serif;font-size:12px;color:var(--text1);outline:none}
+.filter-sel:focus{border-color:var(--navy2)}
+#toast{position:fixed;bottom:20px;left:20px;background:var(--navy);color:white;padding:11px 18px;border-radius:var(--r-sm);font-size:13px;font-weight:500;box-shadow:0 8px 24px rgba(11,37,69,.3);z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;max-width:340px}
+#toast.show{transform:translateY(0);opacity:1}#toast.ok{background:var(--green)}#toast.err{background:var(--red)}
+@media(max-width:1100px){.stats-row{grid-template-columns:repeat(3,1fr)}.pipeline{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.sb{display:none}.main{margin-right:0}.stats-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,doc,getDocs,query,where,orderBy,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyC3aj0-1niPU738buidi_7qJq_XzJ143yo",authDomain:"student-behavior-7bd27.firebaseapp.com",projectId:"student-behavior-7bd27",storageBucket:"student-behavior-7bd27.firebasestorage.app",messagingSenderId:"401144670363",appId:"1:401144670363:web:7b6cda0938be4aa763fe3e"});
+window.$db=getFirestore(app);window.$fb={collection,doc,getDocs,query,where,orderBy,serverTimestamp};window.$fbReady=true;
+</script>
+</head>
+<body>
+<aside class="sb">
+  <div class="sb-logo"><div class="sb-logo-icon">🏛️</div><div><div class="sb-logo-name">نظام المتابعة</div><div class="sb-logo-sub">الطلابية السلوكية</div></div></div>
+  <div class="sb-user">
+    <div class="sb-av">م</div>
+    <div><div class="sb-uname" id="sb-name">أ. خالد أحمد المغني</div><div class="sb-urole">مدير المدرسة</div></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec-lbl">الإدارة</div>
+    <div class="sb-item active" id="sbt-dash"    onclick="switchTab('dash')"><span class="sb-icon">📊</span>لوحة المتابعة</div>
+    <div class="sb-item"        id="sbt-pipeline"onclick="switchTab('pipeline')"><span class="sb-icon">🔄</span>مسار الحالات</div>
+    <div class="sb-item"        id="sbt-log"     onclick="switchTab('log')"><span class="sb-icon">📋</span>سجل الإجراءات</div>
+    <div class="sb-item"        id="sbt-reports" onclick="switchTab('reports')"><span class="sb-icon">📄</span>التقارير</div>
+  </nav>
+  <div class="sb-footer"><div class="sb-logout" onclick="logout()"><span class="sb-icon">🚪</span>تسجيل الخروج</div></div>
+</aside>
+<div class="main">
+  <div class="topbar">
+    <div class="tb-left"><h1 id="tb-title">لوحة إدارة المدرسة</h1><p id="tb-sub">مدرسة عبدالله بن تركي الابتدائية بنين — رؤية شاملة 360°</p></div>
+    <div class="tb-right">
+      <button class="btn btn-outline btn-sm" onclick="exportExcel()">Excel ↓</button>
+      <button class="btn btn-outline btn-sm" onclick="window.print()">🖨️</button>
+      <div class="tb-btn" onclick="refreshCurrent()">🔄</div>
+    </div>
+  </div>
+  <div class="content" id="content"><div style="text-align:center;padding:50px;color:var(--text3)">⏳ جارٍ التحميل...</div></div>
+</div>
+<div id="toast"></div>
+<script>
+const sess=JSON.parse(sessionStorage.getItem('sbs_user')||'null');
+if(!sess||sess.role!=='director'){window.location.href='login.html';throw new Error();}
+document.getElementById('sb-name').textContent=sess.name||'أ. خالد أحمد المغني';
+
+const DEGBG={1:'#EBF0FF',2:'#E8F9F1',3:'#FFF5E6',4:'#FEF2F2'};
+const DEGCL={1:'#1A56DB',2:'#0A7A4A',3:'#B05E0A',4:'#B91C1C'};
+const CLSLBL={'5-1':'خامس—1','5-2':'خامس—2','5-3':'خامس—3','5-4':'خامس—4','5-5':'خامس—5','5-6':'خامس—6','5-7':'خامس—7','5-8':'خامس—8','5-9':'خامس—9','5-10':'خامس—10','6-1':'سادس—1','6-2':'سادس—2','6-3':'سادس—3','6-4':'سادس—4','6-5':'سادس—5','6-6':'سادس—6','6-7':'سادس—7','6-8':'سادس—8','6-9':'سادس—9','6-10':'سادس—10'};
+const TODAY=new Date().toISOString().split('T')[0];
+let _curTab='dash',_allViols=[],_allCases=[];
+
+function switchTab(tab){
+  _curTab=tab;
+  ['dash','pipeline','log','reports'].forEach(t=>{const el=document.getElementById('sbt-'+t);if(el)el.classList.toggle('active',t===tab);});
+  const titles={dash:'لوحة إدارة المدرسة',pipeline:'مسار الحالات',log:'سجل جميع الإجراءات',reports:'التقارير'};
+  document.getElementById('tb-title').textContent=titles[tab]||tab;
+  if(tab==='dash')loadDash();else if(tab==='pipeline')loadPipeline();else if(tab==='log')loadLog();else if(tab==='reports')loadReports();
+}
+function refreshCurrent(){switchTab(_curTab);}
+
+async function fetchAll(){
+  if(!window.$fbReady)throw new Error('Firebase غير متصل');
+  const[vs,cs,ls]=await Promise.all([
+    window.$fb.getDocs(window.$fb.collection(window.$db,'violations')),
+    window.$fb.getDocs(window.$fb.collection(window.$db,'cases')),
+    window.$fb.getDocs(window.$fb.query(window.$fb.collection(window.$db,'lates'),window.$fb.where('date','==',TODAY)))
+  ]);
+  _allViols=vs.docs.map(d=>({id:d.id,...d.data()}));
+  _allCases=cs.docs.map(d=>({id:d.id,...d.data()}));
+  return{viols:_allViols,cases:_allCases,todayLates:ls.size};
+}
+
+async function loadDash(){
+  const el=document.getElementById('content');
+  el.innerHTML='<div style="text-align:center;padding:50px;color:var(--text3)">⏳</div>';
+  try{
+    const{viols,cases,todayLates}=await fetchAll();
+    const todayV=viols.filter(v=>v.date===TODAY);
+    const deg4=viols.filter(v=>v.degree===4).length;
+    const openC=cases.filter(c=>c.status!=='closed').length;
+    const psychC=cases.filter(c=>c.stage==='psychologist'&&c.status!=='closed').length;
+    el.innerHTML=`
+      <div class="stats-row">
+        <div class="stat red"><div class="stat-icon">🔴</div><div class="stat-lbl">مخالفات درجة 4</div><div class="stat-val" style="color:var(--red)">${deg4}</div><div class="stat-sub">يستدعي اهتماماً</div></div>
+        <div class="stat amber"><div class="stat-icon">⚠️</div><div class="stat-lbl">مخالفات اليوم</div><div class="stat-val" style="color:var(--amber)">${todayV.length}</div><div class="stat-sub">عبر جميع الفصول</div></div>
+        <div class="stat blue"><div class="stat-icon">⏱️</div><div class="stat-lbl">تأخيرات اليوم</div><div class="stat-val" style="color:var(--blue)">${todayLates}</div><div class="stat-sub">طالب متأخر</div></div>
+        <div class="stat purple"><div class="stat-icon">🔄</div><div class="stat-lbl">حالات نشطة</div><div class="stat-val" style="color:var(--purple)">${openC}</div><div class="stat-sub">قيد المتابعة</div></div>
+        <div class="stat teal"><div class="stat-icon">🧠</div><div class="stat-lbl">محولة للنفسي</div><div class="stat-val" style="color:var(--teal)">${psychC}</div><div class="stat-sub">هذا الشهر</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:16px">
+        <div class="card">
+          <div class="card-header"><div class="card-title">أبرز المخالفات اليوم</div><span style="font-size:12px;color:var(--text3)">${TODAY}</span></div>
+          <div class="tbl-wrap"><table class="tbl">
+            <thead><tr><th>الطالب</th><th>الفصل</th><th>المخالفة</th><th>الدرجة</th><th>بواسطة</th><th>الحالة</th></tr></thead>
+            <tbody>${todayV.length===0?`<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text3)">لا توجد مخالفات اليوم</td></tr>`:
+            todayV.slice(0,10).map(v=>`<tr>
+              <td style="font-weight:600">${v.studentName||'—'}</td>
+              <td>${CLSLBL[v.classId]||v.classId||'—'}</td>
+              <td style="max-width:160px">${v.type}</td>
+              <td><span style="display:inline-flex;width:24px;height:24px;border-radius:6px;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:${DEGBG[v.degree]};color:${DEGCL[v.degree]}">${v.degree}</span></td>
+              <td style="font-size:12px;color:var(--text2)">${v.createdByName||'—'}</td>
+              <td><span class="chip chip-${v.status==='raised_social'?'purple':v.status==='handled_supervisor'?'green':v.status==='raised_supervisor'?'amber':'navy'}" style="font-size:10px">${v.status==='raised_social'?'محال':v.status==='handled_supervisor'?'معالج':v.status==='raised_supervisor'?'مرفوع':'محفوظ'}</span></td>
+            </tr>`).join('')}
+            </tbody>
+          </table></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div class="card-header"><div class="card-title">أعلى خطورة</div></div>
+            ${cases.filter(c=>c.status!=='closed').slice(0,5).map(c=>`
+            <div class="risk-item">
+              <div style="width:32px;height:32px;border-radius:8px;background:${DEGBG[c.degree||1]};color:${DEGCL[c.degree||1]};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0">${c.degree||1}</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600">${c.studentName}</div>
+                <div style="font-size:11px;color:var(--text2)">${c.classId||''}</div>
+                <div class="risk-bar-wrap"><div class="risk-bar" style="width:${Math.min(100,(c.degree||1)*25)}%;background:${(c.degree||1)>=4?'var(--red)':'var(--amber)'}"></div></div>
+              </div>
+              <span class="chip chip-${c.stage==='psychologist'?'teal':c.stage==='social'?'purple':'amber'}" style="font-size:10px">${c.stage==='psychologist'?'نفسي':c.stage==='social'?'اجتماعي':'مشرف'}</span>
+            </div>`).join('')}
+            ${cases.filter(c=>c.status!=='closed').length===0?`<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px">لا توجد حالات نشطة</div>`:''}
+          </div>
+        </div>
+      </div>`;
+  }catch(e){el.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;}
+}
+
+async function loadPipeline(){
+  const el=document.getElementById('content');
+  el.innerHTML='<div style="text-align:center;padding:50px;color:var(--text3)">⏳</div>';
+  try{
+    const{cases}=await fetchAll();
+    const stages=[
+      {key:'supervisor',lbl:'المشرف',clr:'var(--amber)'},
+      {key:'social',lbl:'الأخصائي الاجتماعي',clr:'var(--purple)'},
+      {key:'psychologist',lbl:'الأخصائي النفسي',clr:'var(--teal)'},
+      {key:'closed',lbl:'مغلقة',clr:'var(--green)'},
+    ];
+    el.innerHTML=`<div class="card"><div class="card-header"><div class="card-title">مسار الحالات الكامل</div><span style="font-size:12px;color:var(--text3)">${cases.length} حالة</span></div>
+      <div class="pipeline">${stages.map(s=>{
+        const items=s.key==='closed'?cases.filter(c=>c.status==='closed'):cases.filter(c=>c.stage===s.key&&c.status!=='closed');
+        return `<div class="pipe-col">
+          <div class="pipe-title" style="color:${s.clr}">${s.lbl}<span class="pipe-cnt" style="color:${s.clr}">${items.length}</span></div>
+          ${items.slice(0,5).map(c=>`<div class="pipe-card">
+            <div class="pipe-card-name">${c.studentName}</div>
+            <div class="pipe-card-meta">${CLSLBL[c.classId]||c.classId||''}</div>
+            <div class="pipe-card-chips">
+              <span class="chip chip-${(c.degree||1)>=4?'red':(c.degree||1)>=3?'amber':'navy'}" style="font-size:10px">د${c.degree||1}</span>
+              ${c.priority==='urgent'?'<span class="chip chip-red" style="font-size:10px">عاجل</span>':''}
+            </div>
+          </div>`).join('')}
+          ${items.length>5?`<div style="font-size:11px;color:var(--text3);text-align:center;padding:4px">+${items.length-5} أخرى</div>`:''}
+        </div>`;}).join('')}
+      </div>
+    </div>`;
+  }catch(e){el.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;}
+}
+
+async function loadLog(){
+  const el=document.getElementById('content');
+  el.innerHTML='<div style="text-align:center;padding:50px;color:var(--text3)">⏳</div>';
+  try{
+    await fetchAll();
+    el.innerHTML=`
+      <div class="card">
+        <div class="card-header"><div class="card-title">سجل جميع الإجراءات</div>
+          <div style="display:flex;gap:7px">
+            <select class="filter-sel" id="f-role" onchange="filterLog()"><option value="">كل الأدوار</option><option value="teacher">معلم</option><option value="supervisor">مشرف</option><option value="social">اجتماعي</option><option value="psychologist">نفسي</option></select>
+            <select class="filter-sel" id="f-deg" onchange="filterLog()"><option value="">كل الدرجات</option><option value="1">درجة 1</option><option value="2">درجة 2</option><option value="3">درجة 3</option><option value="4">درجة 4</option></select>
+            <button class="btn btn-outline btn-sm" onclick="exportExcel()">Excel ↓</button>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>الطالب</th><th>الفصل</th><th>المخالفة</th><th>الدرجة</th><th>بواسطة</th><th>الدور</th><th>الحالة</th><th>التاريخ</th></tr></thead>
+          <tbody id="log-tbody">${renderLogRows(_allViols)}</tbody>
+        </table></div>
+      </div>`;
+  }catch(e){el.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;}
+}
+
+function renderLogRows(viols){
+  if(!viols.length)return`<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text3)">لا توجد بيانات</td></tr>`;
+  return viols.map(v=>`<tr>
+    <td style="font-weight:600">${v.studentName||'—'}</td>
+    <td>${CLSLBL[v.classId]||v.classId||'—'}</td>
+    <td style="max-width:160px">${v.type||'—'}</td>
+    <td><span style="display:inline-flex;width:24px;height:24px;border-radius:6px;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:${DEGBG[v.degree]||'#eee'};color:${DEGCL[v.degree]||'#333'}">${v.degree}</span></td>
+    <td style="font-size:12px">${v.createdByName||'—'}</td>
+    <td><span class="chip chip-navy" style="font-size:10px">${v.createdByRole||'—'}</span></td>
+    <td><span class="chip chip-${v.status==='raised_social'?'purple':v.status==='handled_supervisor'?'green':v.status==='raised_supervisor'?'amber':'navy'}" style="font-size:10px">${v.status==='raised_social'?'محال':v.status==='handled_supervisor'?'معالج':v.status==='raised_supervisor'?'مرفوع':'محفوظ'}</span></td>
+    <td style="font-size:11px;color:var(--text3);white-space:nowrap">${v.date||'—'}</td>
+  </tr>`).join('');
+}
+
+function filterLog(){
+  const role=document.getElementById('f-role')?.value;
+  const deg=document.getElementById('f-deg')?.value;
+  let f=_allViols;
+  if(role)f=f.filter(v=>v.createdByRole===role);
+  if(deg)f=f.filter(v=>v.degree===parseInt(deg));
+  const tbody=document.getElementById('log-tbody');
+  if(tbody)tbody.innerHTML=renderLogRows(f);
+}
+
+async function loadReports(){
+  const el=document.getElementById('content');
+  el.innerHTML='<div style="text-align:center;padding:50px;color:var(--text3)">⏳</div>';
+  try{
+    const rSnap=await window.$fb.getDocs(window.$fb.collection(window.$db,'reports'));
+    const reports=rSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    el.innerHTML=`<div class="card">
+      <div class="card-header"><div class="card-title">التقارير الواردة من المشرفين</div><span style="font-size:12px;color:var(--text3)">${reports.length}</span></div>
+      ${reports.length===0?`<div style="padding:40px;text-align:center;color:var(--text3)">لا توجد تقارير مشتركة بعد</div>`:`
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>نوع التقرير</th><th>بواسطة</th><th>الشهر</th><th>التاريخ</th></tr></thead>
+        <tbody>${reports.map(r=>`<tr>
+          <td style="font-weight:600"><span class="chip chip-${r.type==='daily'?'blue':'purple'}">${r.type==='daily'?'يومي':'شهري'}</span></td>
+          <td>${r.createdByName||'—'}</td>
+          <td>${r.month||'—'}</td>
+          <td style="font-size:11px;color:var(--text3)">${r.createdAt?.toDate?r.createdAt.toDate().toLocaleDateString('ar-QA'):'—'}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>`}
+    </div>`;
+  }catch(e){el.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;}
+}
+
+function exportExcel(){
+  if(!_allViols.length){toast('⚠️ لا توجد بيانات للتصدير','err');return;}
+  const rows=[['الطالب','الفصل','المخالفة','الدرجة','بواسطة','الدور','الحالة','التاريخ'],
+    ..._allViols.map(v=>[v.studentName||'',CLSLBL[v.classId]||v.classId||'',v.type||'',v.degree||'',v.createdByName||'',v.createdByRole||'',v.status||'',v.date||''])
+  ];
+  const csv='\uFEFF'+rows.map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='violations_report.csv';a.click();
+  toast('✅ تم تصدير ملف CSV','ok');
+}
+
+function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='show'+(type?' '+type:'');clearTimeout(el._t);el._t=setTimeout(()=>el.className='',3500);}
+function logout(){sessionStorage.removeItem('sbs_user');window.location.href='login.html';}
+switchTab('dash');
+</script>
+</body>
+</html>
