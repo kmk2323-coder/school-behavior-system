@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إعدادات النظام | نظام متابعة السلوك</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0B2545;--navy2:#163A6B;--gold:#C9913A;--bg:#F0F2F8;--surface:#fff;--surface2:#F5F7FC;--surface3:#ECEEF7;--border:#DDE1F0;--border2:#C8CEDF;--text1:#0B1A2E;--text2:#4A5578;--text3:#8892B0;--blue:#1A56DB;--blue-l:#EBF0FF;--green:#0A7A4A;--green-l:#E8F9F1;--red:#B91C1C;--red-l:#FEF2F2;--amber:#B05E0A;--amber-l:#FFF5E6;--r:10px;--r-sm:6px;--sh:0 2px 12px rgba(11,37,69,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text1);font-size:14px;min-height:100vh;display:flex}
+.sb{width:230px;flex-shrink:0;background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;right:0;bottom:0;z-index:100}
+.sb-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.sb-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),#E8B85A);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sb-logo-name{font-size:12px;font-weight:700;color:white}.sb-logo-sub{font-size:10px;color:rgba(255,255,255,.45);margin-top:1px}
+.sb-user{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px}
+.sb-av{width:36px;height:36px;border-radius:50%;background:rgba(201,145,58,.25);border:1.5px solid rgba(201,145,58,.4);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#E8B85A;flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:600;color:white}.sb-urole{font-size:11px;color:rgba(255,255,255,.5)}
+.sb-nav{flex:1;padding:8px;overflow-y:auto}
+.sb-sec-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.3);padding:4px 8px 6px;letter-spacing:1px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:rgba(255,255,255,.6);font-size:13px;font-weight:500;transition:all .15s;margin-bottom:2px;position:relative}
+.sb-item:hover{background:rgba(255,255,255,.08);color:white}
+.sb-item.active{background:rgba(255,255,255,.12);color:white}
+.sb-item.active::before{content:'';position:absolute;right:0;top:6px;bottom:6px;width:3px;background:#E8B85A;border-radius:0 3px 3px 0}
+.sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.sb-footer{padding:10px;border-top:1px solid rgba(255,255,255,.07)}
+.sb-logout{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:rgba(255,255,255,.5);font-size:13px;transition:all .15s}
+.sb-logout:hover{color:#FC8181;background:rgba(252,129,129,.08)}
+.main{margin-right:230px;flex:1;display:flex;flex-direction:column}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-left h1{font-size:15px;font-weight:700}.tb-left p{font-size:11px;color:var(--text3);margin-top:2px}
+.content{padding:20px 24px;flex:1}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:16px}
+.card-header{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-title{font-size:14px;font-weight:700}.card-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.form-group{margin-bottom:12px}.form-lbl{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;display:block}
+.form-ctrl{width:100%;padding:8px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--surface2);font-family:'Cairo',sans-serif;font-size:13px;color:var(--text1);outline:none;direction:rtl;transition:all .15s}
+.form-ctrl:focus{border-color:var(--navy2);background:white;box-shadow:0 0 0 3px rgba(11,37,69,.1)}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.btn{padding:8px 16px;border-radius:var(--r-sm);font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:6px}
+.btn-navy{background:var(--navy);color:white}.btn-navy:hover{background:var(--navy2)}
+.btn-green{background:var(--green);color:white}.btn-green:hover{background:#076b3c}
+.btn-outline{background:var(--surface);color:var(--text2);border:1.5px solid var(--border2)}.btn-outline:hover{background:var(--surface2);border-color:var(--navy);color:var(--navy)}
+.btn-sm{padding:5px 12px;font-size:11px}
+.drop-zone{border:2px dashed var(--border2);border-radius:var(--r);padding:26px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2)}
+.drop-zone:hover,.drop-zone.over{border-color:var(--navy);background:var(--blue-l)}
+.dz-icon{font-size:26px;margin-bottom:8px}
+.dz-title{font-size:13px;font-weight:600;margin-bottom:3px}
+.dz-sub{font-size:11px;color:var(--text3)}
+.upload-status{margin-top:8px;padding:8px 12px;border-radius:var(--r-sm);font-size:12px;display:none}
+.upload-status.ok{display:block;background:var(--green-l);color:var(--green)}
+.upload-status.err{display:block;background:var(--red-l);color:var(--red)}
+.progress{height:4px;background:var(--border);border-radius:4px;margin-top:6px;display:none}
+.progress-fill{height:4px;background:var(--navy);border-radius:4px;width:0;transition:width .3s}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-lbl{font-size:13px;font-weight:600}.toggle-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.toggle{width:42px;height:24px;border-radius:12px;background:var(--border2);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--navy)}
+.toggle::after{content:'';position:absolute;width:18px;height:18px;background:white;border-radius:50%;top:3px;right:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on::after{transform:translateX(-18px)}
+.chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.chip-green{background:var(--green-l);color:var(--green)}.chip-blue{background:var(--blue-l);color:var(--blue)}.chip-amber{background:var(--amber-l);color:var(--amber)}.chip-red{background:var(--red-l);color:var(--red)}.chip-navy{background:#E8EDF7;color:var(--navy)}
+.tbl{width:100%;border-collapse:collapse}.tbl th{background:var(--surface3);padding:9px 14px;font-size:11px;font-weight:600;color:var(--text2);text-align:right;border-bottom:1px solid var(--border)}.tbl td{padding:9px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}.tbl tr:last-child td{border-bottom:none}
+#toast{position:fixed;bottom:20px;left:20px;background:var(--navy);color:white;padding:11px 18px;border-radius:var(--r-sm);font-size:13px;font-weight:500;box-shadow:0 8px 24px rgba(11,37,69,.3);z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;max-width:340px}
+#toast.show{transform:translateY(0);opacity:1}#toast.ok{background:var(--green)}#toast.err{background:var(--red)}
+@media(max-width:900px){.sb{display:none}.main{margin-right:0}.form-grid-2,.form-grid-3{grid-template-columns:1fr}}
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,doc,setDoc,getDocs,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyBwEOtPDYxVzKlnd_cq0Uee8DfRz9c6h8g",authDomain:"student-behavior-d718c.firebaseapp.com",projectId:"student-behavior-d718c",storageBucket:"student-behavior-d718c.firebasestorage.app",messagingSenderId:"958884742355",appId: "1:958884742355:web:23e771866876c808b18026"});
+window.$db=getFirestore(app);window.$fb={collection,doc,setDoc,getDocs,serverTimestamp};window.$fbReady=true;
+</script>
+</head>
+<body>
+<aside class="sb">
+  <div class="sb-logo"><div class="sb-logo-icon">⚙️</div><div><div class="sb-logo-name">إعدادات النظام</div><div class="sb-logo-sub">System Settings</div></div></div>
+  <div class="sb-user"><div class="sb-av">⚙</div><div><div class="sb-uname">مسؤول النظام</div><div class="sb-urole">System Admin</div></div></div>
+  <nav class="sb-nav">
+    <div class="sb-sec-lbl">الإعدادات</div>
+    <div class="sb-item active" id="sbt-school"  onclick="switchTab('school')"><span class="sb-icon">🏫</span>بيانات المدرسة</div>
+    <div class="sb-item"        id="sbt-upload"  onclick="switchTab('upload')"><span class="sb-icon">📤</span>رفع البيانات</div>
+    <div class="sb-item"        id="sbt-users"   onclick="switchTab('users')"><span class="sb-icon">👥</span>المستخدمون</div>
+    <div class="sb-item"        id="sbt-system"  onclick="switchTab('system')"><span class="sb-icon">🔧</span>إعدادات عامة</div>
+  </nav>
+  <div class="sb-footer"><div class="sb-logout" onclick="logout()"><span class="sb-icon">🚪</span>تسجيل الخروج</div></div>
+</aside>
+<div class="main">
+  <div class="topbar">
+    <div class="tb-left"><h1 id="tb-title">بيانات المدرسة</h1><p>إدارة المعلومات الأساسية للنظام</p></div>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+<div id="toast"></div>
+<script>
+const sess=JSON.parse(sessionStorage.getItem('sbs_user')||'null');
+if(!sess||sess.role!=='admin'){window.location.href='login.html';throw new Error();}
+
+const TEMPLATES={
+  students:'\uFEFFرقم الطالب,الاسم الكامل,الصف,الفصل,رقم الهوية,رقم هاتف ولي الأمر,اسم ولي الأمر,ملاحظات\n31558600760,ابراهيم محمد يوسف,خامس,5-1,31558600760,77559373,محمد يوسف,',
+  teachers:'\uFEFFالرقم الوظيفي,الاسم الكامل,اسم المستخدم,كلمة المرور,البريد الإلكتروني,التخصص,الفصول,رقم الجوال\nT001,أحمد محمد السالم,teacher1,Pass@123,a.salem@edu.gov.qa,رياضيات,5-1,97400000010',
+  staff:'\uFEFFالرقم الوظيفي,الاسم الكامل,الدور,اسم المستخدم,كلمة المرور,البريد الإلكتروني,رقم الجوال\n111,أ. خالد أحمد المغني,director,Director@2024,D001,k.mughni@edu.gov.qa,55778899\n222,د. يوسف خليل المحاسنه,vp_academic,VpAcad@2024,D002,y.mahasneh@edu.gov.qa,55889900\n333,أ. محمود السلامة,vp_admin,VpAdmin@2024,D003,m.salameh@edu.gov.qa,55990011\n444,سعود عبدالله القحطاني,supervisor,Super@2024,A001,s.qahtani@edu.gov.qa,55445566\n555,نورة محمد الكواري,social,Social@2024,A002,n.kawari@edu.gov.qa,55556677\n666,خالد أحمد البلوشي,psychologist,Psycho@2024,A003,k.baloshi@edu.gov.qa,55667788'
+};
+
+function switchTab(tab){
+  ['school','upload','users','system'].forEach(t=>{const el=document.getElementById('sbt-'+t);if(el)el.classList.toggle('active',t===tab);});
+  const titles={school:'بيانات المدرسة',upload:'رفع البيانات',users:'المستخدمون',system:'الإعدادات العامة'};
+  document.getElementById('tb-title').textContent=titles[tab]||tab;
+  if(tab==='school')renderSchool();else if(tab==='upload')renderUpload();else if(tab==='users')renderUsers();else if(tab==='system')renderSystem();
+}
+
+function renderSchool(){
+  document.getElementById('content').innerHTML=`
+    <div class="card">
+      <div class="card-header"><div class="card-title">بيانات المدرسة الأساسية</div></div>
+      <div style="padding:16px 18px">
+        <div class="form-grid-2">
+          <div class="form-group"><label class="form-lbl">اسم المدرسة (عربي)</label><input class="form-ctrl" id="sch-name-ar" value="عبدالله بن تركي الابتدائية بنين"></div>
+          <div class="form-group"><label class="form-lbl">School Name (EN)</label><input class="form-ctrl" id="sch-name-en" value="Abdullah Bin Turki Boys Primary School"></div>
+          <div class="form-group"><label class="form-lbl">الوزارة</label><input class="form-ctrl" id="sch-ministry" value="وزارة التعليم والتعليم العالي — دولة قطر"></div>
+          <div class="form-group"><label class="form-lbl">العام الدراسي</label><input class="form-ctrl" id="sch-year" value="2024 / 2025 م"></div>
+          <div class="form-group"><label class="form-lbl">مدير المدرسة</label><input class="form-ctrl" id="sch-principal" value="أ. خالد أحمد المغني"></div>
+          <div class="form-group"><label class="form-lbl">النائب الأكاديمي</label><input class="form-ctrl" id="sch-vp-academic" value="د. يوسف خليل المحاسنه"></div>
+          <div class="form-group"><label class="form-lbl">النائب الإداري</label><input class="form-ctrl" id="sch-vp-admin" value="أ. محمود السلامة"></div>
+          <div class="form-group"><label class="form-lbl">رقم الهاتف</label><input class="form-ctrl" id="sch-phone" placeholder="+974 XXXX XXXX"></div>
+        </div>
+        <button class="btn btn-navy" onclick="saveSchool()">💾 حفظ في Firebase</button>
+      </div>
+    </div>`;
+}
+
+async function saveSchool(){
+  const data={nameAr:document.getElementById('sch-name-ar').value,nameEn:document.getElementById('sch-name-en').value,ministry:document.getElementById('sch-ministry').value,year:document.getElementById('sch-year').value,principalName:document.getElementById('sch-principal').value,vpAcademic:document.getElementById('sch-vp-academic').value,vpAdmin:document.getElementById('sch-vp-admin').value,phone:document.getElementById('sch-phone').value};
+  if(!window.$fbReady){toast('❌ Firebase غير متصل','err');return;}
+  try{
+    await window.$fb.setDoc(window.$fb.doc(window.$db,'settings','school'),{...data,updatedAt:window.$fb.serverTimestamp()});
+    toast('✅ تم حفظ بيانات المدرسة في Firebase','ok');
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+function renderUpload(){
+  document.getElementById('content').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px">
+      ${[
+        {key:'students',icon:'🎒',title:'بيانات الطلاب',note:'الأعمدة: رقم الطالب، الاسم، الصف، الفصل، الهوية، هاتف ولي الأمر'},
+        {key:'teachers',icon:'👨‍🏫',title:'بيانات المعلمين',note:'الأعمدة: الرقم الوظيفي، الاسم، اسم المستخدم، كلمة المرور، البريد، التخصص، الفصول'},
+        {key:'staff',icon:'👮',title:'الكادر الإداري',note:'الأعمدة: الرقم الوظيفي، الاسم، الدور، اسم المستخدم، كلمة المرور، البريد'},
+      ].map(u=>`<div class="card">
+        <div class="card-header">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:38px;height:38px;background:var(--blue-l);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px">${u.icon}</div>
+            <div><div class="card-title">${u.title}</div></div>
+          </div>
+        </div>
+        <div style="padding:14px">
+          <div class="drop-zone" id="dz-${u.key}" onclick="document.getElementById('inp-${u.key}').click()" ondragover="dzo(event,'${u.key}')" ondragleave="dzl('${u.key}')" ondrop="dzd(event,'${u.key}')">
+            <input type="file" id="inp-${u.key}" style="display:none" accept=".csv" onchange="handleFile(this,'${u.key}')">
+            <div class="dz-icon">📊</div>
+            <div class="dz-title" id="dz-title-${u.key}">اسحب CSV أو انقر</div>
+            <div class="dz-sub">ملف CSV — حتى 5MB</div>
+          </div>
+          <div class="upload-status" id="us-${u.key}"></div>
+          <div class="progress" id="prog-${u.key}"><div class="progress-fill" id="fill-${u.key}"></div></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:8px">${u.note}</div>
+          <button class="btn btn-outline btn-sm" style="margin-top:10px" onclick="dlTemplate('${u.key}')">⬇️ قالب CSV</button>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">سجل الرفع</div></div>
+      <table class="tbl"><thead><tr><th>النوع</th><th>الملف</th><th>السجلات</th><th>التاريخ</th><th>الحالة</th></tr></thead>
+      <tbody id="upload-log"><tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text3)">لا توجد عمليات رفع بعد</td></tr></tbody>
+      </table>
+    </div>`;
+}
+
+function dzo(e,k){e.preventDefault();document.getElementById('dz-'+k)?.classList.add('over');}
+function dzl(k){document.getElementById('dz-'+k)?.classList.remove('over');}
+function dzd(e,k){e.preventDefault();dzl(k);const f=e.dataTransfer.files[0];if(f)processCSV(f,k);}
+function handleFile(inp,k){if(inp.files[0])processCSV(inp.files[0],k);}
+
+async function processCSV(file,type){
+  const title=document.getElementById('dz-title-'+type);
+  const status=document.getElementById('us-'+type);
+  const prog=document.getElementById('prog-'+type);
+  const fill=document.getElementById('fill-'+type);
+  if(title)title.textContent='📄 '+file.name;
+  status.className='upload-status';status.textContent='';
+  prog.style.display='block';fill.style.width='0%';
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    try{
+      fill.style.width='40%';
+      let text=e.target.result.replace(/^\uFEFF/,'');
+      const lines=text.split(/\r?\n/).filter(l=>l.trim());
+      if(lines.length<2)throw new Error('الملف فارغ أو غير صحيح');
+      const headers=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+      const rows=[];
+      for(let i=1;i<lines.length;i++){
+        const vals=smartSplit(lines[i]);
+        if(vals.length<2)continue;
+        const obj={};
+        headers.forEach((h,idx)=>{obj[h]=vals[idx]?.trim().replace(/^"|"$/g,'')||'';});
+        rows.push(obj);
+      }
+      fill.style.width='70%';
+      if(!window.$fbReady)throw new Error('Firebase غير متصل');
+      let saved=0;
+      if(type==='students'){
+        const mapped=rows.map(r=>({id:r['رقم الطالب']||r['id']||`s_${Date.now()}`,name:r['الاسم الكامل']||r['الاسم']||'',grade:r['الصف']||'',classId:r['الفصل']||'',nationalId:r['رقم الهوية']||'',parentPhone:r['رقم هاتف ولي الأمر']||'',parentName:r['اسم ولي الأمر']||'',notes:r['ملاحظات']||'',violationCount:0,active:true}));
+        await Promise.all(mapped.map(s=>window.$fb.setDoc(window.$fb.doc(window.$db,'students',String(s.id)),{...s,updatedAt:window.$fb.serverTimestamp()},{merge:true})));
+        saved=mapped.length;
+      }else{
+        const roleMap={director:'director',vp_academic:'psychologist',vp_admin:'psychologist',supervisor:'supervisor',supervisor1:'supervisor',supervisor2:'supervisor',social:'social',social1:'social',psycho:'psychologist',psycho1:'psychologist',teacher:'teacher'};
+        const mapped=rows.map(r=>({id:r['الرقم الوظيفي']||r['id']||`u_${Date.now()}`,name:r['الاسم الكامل']||r['الاسم']||'',username:r['كلمة المرور']||r['username']||'',password:r['كلمة المرور']||r['password']||'',email:r['البريد الإلكتروني']||r['email']||'',role:roleMap[r['الدور']||r['role']]||'teacher',phone:r['رقم الجوال']||r['phone']||'',active:true}));
+        await Promise.all(mapped.map(u=>window.$fb.setDoc(window.$fb.doc(window.$db,'users',String(u.id)),{...u,updatedAt:window.$fb.serverTimestamp()},{merge:true})));
+        saved=mapped.length;
+      }
+      fill.style.width='100%';
+      status.className='upload-status ok';status.textContent=`✅ تم استيراد ${saved} سجل بنجاح`;
+      addLogRow(type,file.name,saved);
+      toast(`✅ ${saved} سجل رُفع لـ Firebase`,'ok');
+    }catch(err){
+      fill.style.width='100%';
+      status.className='upload-status err';status.textContent='❌ '+err.message;
+      toast('❌ '+err.message,'err');
+    }
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+function smartSplit(line){
+  const r=[];let c='';let inQ=false;
+  for(const ch of line){if(ch==='"')inQ=!inQ;else if(ch===','&&!inQ){r.push(c);c='';}else c+=ch;}
+  r.push(c);return r;
+}
+
+function addLogRow(type,fname,rows){
+  const tbody=document.getElementById('upload-log');
+  if(!tbody)return;
+  const labels={students:'طلاب',teachers:'معلمون',staff:'كادر إداري'};
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${labels[type]||type}</td><td>${fname}</td><td>${rows}</td><td>${new Date().toLocaleDateString('ar-QA')}</td><td><span class="chip chip-green">ناجح</span></td>`;
+  if(tbody.querySelector('td[colspan]'))tbody.innerHTML='';
+  tbody.insertBefore(tr,tbody.firstChild);
+}
+
+function dlTemplate(type){
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(TEMPLATES[type]);
+  a.download=`template_${type}.csv`;a.click();
+  toast('⬇️ تم تحميل القالب','ok');
+}
+
+async function renderUsers(){
+  document.getElementById('content').innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)">⏳</div>';
+  if(!window.$fbReady){document.getElementById('content').innerHTML='<div class="card" style="padding:30px;text-align:center;color:var(--red)">Firebase غير متصل</div>';return;}
+  try{
+    const snap=await window.$fb.getDocs(window.$fb.collection(window.$db,'users'));
+    const users=snap.docs.map(d=>({id:d.id,...d.data()}));
+    const roleChip={teacher:'blue',supervisor:'amber',social:'purple',psychologist:'teal',director:'navy',admin:'navy'};
+    document.getElementById('content').innerHTML=`<div class="card">
+      <div class="card-header"><div class="card-title">المستخدمون المسجلون (${users.length})</div></div>
+      ${users.length===0?`<div style="padding:40px;text-align:center;color:var(--text3)">لا يوجد مستخدمون — ارفع بيانات الكادر أولاً</div>`:`
+      <table class="tbl"><thead><tr><th>#</th><th>الاسم</th><th>اسم المستخدم</th><th>الدور</th><th>الحالة</th></tr></thead>
+      <tbody>${users.map((u,i)=>`<tr>
+        <td style="color:var(--text3)">${i+1}</td>
+        <td style="font-weight:600">${u.name||'—'}</td>
+        <td style="font-family:monospace;font-size:12px">${u.username||u.email||'—'}</td>
+        <td><span class="chip chip-${roleChip[u.role]||'navy'}">${u.role||'—'}</span></td>
+        <td><span class="chip chip-${u.active!==false?'green':'red'}">${u.active!==false?'نشط':'موقوف'}</span></td>
+      </tr>`).join('')}</tbody></table>`}
+    </div>`;
+  }catch(e){document.getElementById('content').innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;}
+}
+
+function renderSystem(){
+  document.getElementById('content').innerHTML=`
+    <div class="card">
+      <div class="card-header"><div class="card-title">إعدادات التصعيد والإشعارات</div></div>
+      <div style="padding:14px 18px">
+        <div class="toggle-row"><div><div class="toggle-lbl">إشعار المشرف فور رفع مخالفة</div><div class="toggle-sub">يصل الإشعار فوراً لشاشة المشرف</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><div><div class="toggle-lbl">تصعيد تلقائي عند تكرار المخالفة 3 مرات</div><div class="toggle-sub">ترفع الحالة تلقائياً للأخصائي الاجتماعي</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><div><div class="toggle-lbl">مشاركة التقارير مع المدير تلقائياً</div><div class="toggle-sub">تظهر تقارير المشرف في شاشة المدير</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><div><div class="toggle-lbl">تقرير يومي تلقائي للمدير</div><div class="toggle-sub">ملخص يومي في نهاية يوم العمل</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><div><div class="toggle-lbl">واجهة ثنائية اللغة (عربي / إنجليزي)</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">معلومات النظام</div></div>
+      <div style="padding:14px 18px;font-size:13px;color:var(--text2);line-height:2">
+        <div><strong>Firebase Project:</strong> student-behavior-7bd27</div>
+        <div><strong>Database:</strong> Firestore (europe-west1)</div>
+        <div><strong>المدرسة:</strong> عبدالله بن تركي الابتدائية بنين</div>
+        <div><strong>الوزارة:</strong> وزارة التعليم والتعليم العالي — دولة قطر</div>
+        <div><strong>الإصدار:</strong> 1.0.0 — 2025</div>
+      </div>
+    </div>`;
+}
+
+function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='show'+(type?' '+type:'');clearTimeout(el._t);el._t=setTimeout(()=>el.className='',3500);}
+function logout(){sessionStorage.removeItem('sbs_user');window.location.href='login.html';}
+switchTab('school');
+</script>
+</body>
+</html>

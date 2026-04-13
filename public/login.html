@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام متابعة السلوك الطلابي | مدرسة عبدالله بن تركي</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0B2545;--navy2:#163A6B;--navy3:#1E4D8C;--gold:#C9913A;--gold2:#E8B85A;--red:#B91C1C;--green:#15803D;--muted:rgba(255,255,255,.55)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;background:var(--navy);min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 80% 55% at 15% 5%,rgba(201,145,58,.13) 0%,transparent 60%),radial-gradient(ellipse 60% 70% at 85% 95%,rgba(30,77,140,.55) 0%,transparent 60%);pointer-events:none}
+body::after{content:'';position:fixed;inset:0;z-index:0;background-image:repeating-linear-gradient(45deg,rgba(201,145,58,.025) 0,rgba(201,145,58,.025) 1px,transparent 0,transparent 36px),repeating-linear-gradient(-45deg,rgba(201,145,58,.025) 0,rgba(201,145,58,.025) 1px,transparent 0,transparent 36px);pointer-events:none}
+.topbar{position:relative;z-index:1;padding:14px 40px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between}
+.ministry{display:flex;align-items:center;gap:12px}
+.mlogo{width:46px;height:46px;border-radius:50%;background:rgba(201,145,58,.18);border:1px solid rgba(201,145,58,.4);display:flex;align-items:center;justify-content:center;font-size:22px}
+.ml1{font-size:10px;color:var(--muted);letter-spacing:.3px}
+.ml2{font-size:13px;font-weight:700;color:white;margin-top:1px}
+.school-info{text-align:left}
+.sname{font-size:13px;font-weight:700;color:rgba(255,255,255,.9)}
+.smeta{font-size:11px;color:var(--gold);margin-top:2px}
+.hero{flex:1;position:relative;z-index:1;display:flex;align-items:center;justify-content:center;padding:32px 20px}
+.hgrid{max-width:1040px;width:100%;display:grid;grid-template-columns:1fr 400px;gap:56px;align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border:1px solid rgba(201,145,58,.35);border-radius:20px;margin-bottom:18px}
+.edot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.etxt{font-size:12px;color:var(--gold);font-weight:600}
+.htitle{font-size:36px;font-weight:900;color:white;line-height:1.25;margin-bottom:14px}
+.htitle span{color:var(--gold2)}
+.hdiv{width:44px;height:2px;margin:16px 0;background:linear-gradient(90deg,var(--gold),transparent)}
+.mgmt{display:flex;flex-direction:column;gap:5px}
+.mgmt-item{font-size:12px;color:rgba(255,255,255,.55)}
+.mgmt-item strong{color:rgba(255,255,255,.9);font-weight:600}
+.card{background:white;border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,.35);overflow:hidden}
+.ch{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);padding:22px 26px;text-align:center;border-bottom:3px solid var(--gold)}
+.chi{font-size:28px;margin-bottom:6px}
+.cht{font-size:16px;font-weight:800;color:white}
+.chs{font-size:11px;color:rgba(255,255,255,.6);margin-top:3px}
+.cb{padding:22px 24px}
+.err{display:none;align-items:center;gap:8px;background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:9px 12px;font-size:12px;color:var(--red);margin-bottom:14px}
+.err.show{display:flex}
+.fg{margin-bottom:14px}
+.fl{font-size:11px;font-weight:700;color:#505875;margin-bottom:5px;display:block}
+.iw{position:relative}
+.iw input{width:100%;padding:10px 14px 10px 38px;border-radius:8px;border:1.5px solid #C8CEDF;background:#F5F7FC;font-family:'Cairo',sans-serif;font-size:13px;color:#0B1A2E;outline:none;direction:rtl;transition:all .18s}
+.iw input:focus{border-color:var(--navy2);background:white;box-shadow:0 0 0 3px rgba(11,37,69,.1)}
+.iw input::placeholder{color:#929BB8}
+.ii{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;color:#929BB8}
+.lbtn{width:100%;padding:12px;border-radius:8px;background:linear-gradient(135deg,var(--navy),var(--navy3));color:white;border:none;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;box-shadow:0 4px 16px rgba(11,37,69,.3);margin-top:4px}
+.lbtn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(11,37,69,.4)}
+.lbtn:disabled{opacity:.65;cursor:not-allowed;transform:none}
+.qsep{margin-top:20px;padding-top:16px;border-top:1px solid #DDE1F0}
+.qlbl{font-size:10px;font-weight:700;color:#929BB8;text-align:center;margin-bottom:10px;letter-spacing:.4px}
+.qgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.qbtn{padding:9px 6px;border-radius:8px;text-align:center;cursor:pointer;transition:all .18s;border:1.5px solid #DDE1F0;background:#F5F7FC}
+.qbtn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.qi{font-size:17px;display:block;margin-bottom:3px}
+.qn{font-size:11px;font-weight:700;color:#0B1A2E}
+.qc{font-size:10px;color:#929BB8;margin-top:1px}
+.qbtn.wide{grid-column:span 2}
+.q-teacher{border-color:#BFCFFE!important;background:#EFF4FF!important}
+.q-supervisor{border-color:#FED7AA!important;background:#FFF7ED!important}
+.q-social{border-color:#C4B5FD!important;background:#F4F0FF!important}
+.q-psycho{border-color:#99E8E0!important;background:#F0FDFA!important}
+.q-director{border-color:#BFCFE8!important;background:#EEF3FA!important}
+.q-admin{border-color:#C9913A44!important;background:#FDFAEE!important}
+.footer{position:relative;z-index:1;padding:12px 40px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between}
+.ftxt{font-size:11px;color:rgba(255,255,255,.3)}
+.lbtn2{padding:5px 14px;border-radius:7px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);font-family:'Cairo',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
+.lbtn2:hover{background:rgba(255,255,255,.14);color:white}
+#ov{position:fixed;inset:0;z-index:99;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+#ov.show{opacity:1;pointer-events:all}
+.spin{width:44px;height:44px;border-radius:50%;border:3px solid rgba(201,145,58,.2);border-top-color:var(--gold2);animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#ovtxt{font-size:14px;color:rgba(255,255,255,.6)}
+@media(max-width:820px){.hgrid{grid-template-columns:1fr}.hleft{display:none}.topbar{padding:12px 20px}.footer{padding:10px 20px;flex-direction:column;gap:6px}}
+</style>
+</head>
+<body>
+
+<div id="ov">
+  <div class="spin"></div>
+  <div id="ovtxt">جارٍ تحميل النظام...</div>
+</div>
+
+<div class="topbar">
+  <div class="ministry">
+    <div class="mlogo">🏛️</div>
+    <div>
+      <div class="ml1">دولة قطر — State of Qatar</div>
+      <div class="ml2">وزارة التعليم والتعليم العالي</div>
+    </div>
+  </div>
+  <div class="school-info">
+    <div class="sname">مدرسة عبدالله بن تركي الابتدائية بنين</div>
+    <div class="smeta">🇶🇦 &nbsp; العام الدراسي 2024 / 2025 م &nbsp;|&nbsp; Abdullah Bin Turki Boys Primary School</div>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hgrid">
+    <div class="hleft">
+      <div class="eyebrow">
+        <div class="edot"></div>
+        <div class="etxt">منظومة متكاملة للمتابعة السلوكية</div>
+      </div>
+      <div class="htitle">بيئة تعليمية<br>آمنة ومنظّمة<br>بإدارة <span>احترافية</span></div>
+      <div class="hdiv"></div>
+      <div class="mgmt">
+        <div class="mgmt-item"><strong>مدير المدرسة:</strong> أ. خالد أحمد المغني</div>
+        <div class="mgmt-item"><strong>النائب الأكاديمي:</strong> د. يوسف خليل المحاسنه</div>
+        <div class="mgmt-item"><strong>النائب الإداري:</strong> أ. محمود السلامة</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch">
+        <div class="chi">🔐</div>
+        <div class="cht">تسجيل الدخول</div>
+        <div class="chs">أدخل بياناتك للوصول إلى النظام</div>
+      </div>
+      <div class="cb">
+        <div class="err" id="err"><span>⚠️</span><span id="emsg">خطأ</span></div>
+        <div class="fg">
+          <label class="fl">اسم المستخدم</label>
+          <div class="iw">
+            <input type="text" id="iu" placeholder="D001 أو admin" autocomplete="off"
+              onkeydown="if(event.key==='Enter')login()">
+            <span class="ii">👤</span>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">كلمة المرور</label>
+          <div class="iw">
+            <input type="password" id="ip" placeholder="••••••••"
+              onkeydown="if(event.key==='Enter')login()">
+            <span class="ii">🔒</span>
+          </div>
+        </div>
+        <button class="lbtn" id="lb" onclick="login()">دخول إلى النظام &nbsp;→</button>
+        <div class="qsep">
+          <div class="qlbl">دخول سريع — للعرض التجريبي</div>
+          <div class="qgrid">
+            <div class="qbtn q-teacher"    onclick="quick('teacher')"><span class="qi">👨‍🏫</span><div class="qn">المعلم</div><div class="qc">teacher1</div></div>
+            <div class="qbtn q-supervisor" onclick="quick('supervisor')"><span class="qi">👮</span><div class="qn">المشرف</div><div class="qc">A001</div></div>
+            <div class="qbtn q-social"     onclick="quick('social')"><span class="qi">🤝</span><div class="qn">اجتماعي</div><div class="qc">A002</div></div>
+            <div class="qbtn q-psycho"     onclick="quick('psychologist')"><span class="qi">🧠</span><div class="qn">نفسي</div><div class="qc">A003</div></div>
+            <div class="qbtn q-director wide" onclick="quick('director')"><span class="qi">🏛️</span><div class="qn">مدير المدرسة</div><div class="qc">D001</div></div>
+            <div class="qbtn q-admin"      onclick="quick('admin')"><span class="qi">⚙️</span><div class="qn">مسؤول النظام</div><div class="qc">admin</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="ftxt">© 2025 — وزارة التعليم والتعليم العالي، دولة قطر. جميع الحقوق محفوظة.</div>
+  <button class="lbtn2" onclick="toggleLang()">EN / عر</button>
+</div>
+
+<script>
+const USERS=[
+  {id:'111', username:'D001',     password:'Director@2024', name:'أ. خالد أحمد المغني',    role:'director',     page:'director.html'},
+  {id:'222', username:'D002',     password:'VpAcad@2024',   name:'د. يوسف خليل المحاسنه',  role:'psychologist', page:'psychologist.html'},
+  {id:'333', username:'D003',     password:'VpAdmin@2024',  name:'أ. محمود السلامة',        role:'psychologist', page:'psychologist.html'},
+  {id:'444', username:'A001',     password:'Super@2024',    name:'سعود عبدالله القحطاني',  role:'supervisor',   page:'supervisor.html'},
+  {id:'555', username:'A002',     password:'Social@2024',   name:'نورة محمد الكواري',       role:'social',       page:'social.html'},
+  {id:'666', username:'A003',     password:'Psycho@2024',   name:'خالد أحمد البلوشي',      role:'psychologist', page:'psychologist.html'},
+  {id:'T001',username:'teacher1', password:'Pass@123',      name:'أحمد محمد السالم',        role:'teacher',      page:'teacher.html'},
+  {id:'ADMIN',username:'admin',   password:'admin123',      name:'مسؤول النظام',            role:'admin',        page:'settings.html'},
+];
+
+// بيانات الطلاب الحقيقية (مختصرة — 20 طالب للعرض، ترفع الكاملة من الإعدادات)
+window.STUDENTS_SAMPLE=[
+  {id:'31558600760',name:'ابراهيم محمد يوسف',classId:'5-1',grade:'خامس',parentPhone:'77559373',parentName:'محمد يوسف'},
+  {id:'31551200007',name:'احمد طالب ناصر صالح المعمرى',classId:'5-1',grade:'خامس',parentPhone:'55609207',parentName:'طالب ناصر صالح المعمرى'},
+  {id:'31481803553',name:'احمد عبدالله السيد بيومي حسن',classId:'5-1',grade:'خامس',parentPhone:'70778583',parentName:'عبدالله السيد بيومي حسن'},
+  {id:'31381804063',name:'ادهم احمد صلاح الدين هارون',classId:'5-1',grade:'خامس',parentPhone:'55597419',parentName:'احمد صلاح الدين هارون'},
+  {id:'31335603082',name:'بديرالحسن محمد انتضاء الحسن',classId:'5-1',grade:'خامس',parentPhone:'71108629',parentName:'محمد انتضاء الحسن'},
+];
+
+window.CLASSES={
+  '5-1':'الخامس — 1','5-2':'الخامس — 2','5-3':'الخامس — 3','5-4':'الخامس — 4',
+  '5-5':'الخامس — 5','5-6':'الخامس — 6','5-7':'الخامس — 7','5-8':'الخامس — 8',
+  '5-9':'الخامس — 9','5-10':'الخامس — 10','05-ESE':'الخامس — ESE',
+  '6-1':'السادس — 1','6-2':'السادس — 2','6-3':'السادس — 3','6-4':'السادس — 4',
+  '6-5':'السادس — 5','6-6':'السادس — 6','6-7':'السادس — 7','6-8':'السادس — 8',
+  '6-9':'السادس — 9','6-10':'السادس — 10','06-ESE':'السادس — ESE',
+};
+
+let lang=localStorage.getItem('sbs_lang')||'ar';
+function toggleLang(){lang=lang==='ar'?'en':'ar';localStorage.setItem('sbs_lang',lang);document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';}
+
+function showErr(m){document.getElementById('emsg').textContent=m;document.getElementById('err').classList.add('show');}
+function hideErr(){document.getElementById('err').classList.remove('show');}
+
+function go(user){
+  sessionStorage.setItem('sbs_user',JSON.stringify({id:user.id,name:user.name,role:user.role,username:user.username}));
+  document.getElementById('ovtxt').textContent='مرحباً '+user.name+'...';
+  document.getElementById('ov').classList.add('show');
+  setTimeout(()=>{window.location.href=user.page;},1000);
+}
+
+function login(){
+  hideErr();
+  const u=document.getElementById('iu').value.trim();
+  const p=document.getElementById('ip').value.trim();
+  if(!u||!p){showErr('الرجاء إدخال اسم المستخدم وكلمة المرور');return;}
+  const user=USERS.find(x=>x.username===u&&x.password===p);
+  if(!user){showErr('اسم المستخدم أو كلمة المرور غير صحيحة');return;}
+  const btn=document.getElementById('lb');
+  btn.disabled=true;btn.textContent='⏳ جارٍ التحقق...';
+  go(user);
+}
+
+function quick(role){
+  const map={teacher:'teacher1',supervisor:'A001',social:'A002',psychologist:'A003',director:'D001',admin:'admin'};
+  const user=USERS.find(u=>u.username===map[role]);
+  if(user) go(user);
+}
+</script>
+</body>
+</html>

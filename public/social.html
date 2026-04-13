@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأخصائي الاجتماعي | نظام متابعة السلوك</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0B2545;--navy2:#163A6B;--bg:#F0F2F8;--surface:#fff;--surface2:#F5F7FC;--surface3:#ECEEF7;--border:#DDE1F0;--border2:#C8CEDF;--text1:#0B1A2E;--text2:#4A5578;--text3:#8892B0;--blue:#1A56DB;--blue-l:#EBF0FF;--green:#0A7A4A;--green-l:#E8F9F1;--red:#B91C1C;--red-l:#FEF2F2;--amber:#B05E0A;--amber-l:#FFF5E6;--purple:#5B21B6;--purple-l:#F2EEFF;--teal:#0C7872;--teal-l:#E6FAF8;--r:10px;--r-sm:6px;--sh:0 2px 12px rgba(11,37,69,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text1);font-size:14px;min-height:100vh;display:flex}
+.sb{width:230px;flex-shrink:0;background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;right:0;bottom:0;z-index:100}
+.sb-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.sb-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#5B21B6,#7C3AED);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sb-logo-name{font-size:12px;font-weight:700;color:white}
+.sb-logo-sub{font-size:10px;color:rgba(255,255,255,.45);margin-top:1px}
+.sb-user{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px}
+.sb-av{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#C4B5FD;flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:600;color:white}
+.sb-urole{font-size:11px;color:rgba(255,255,255,.5)}
+.sb-nav{flex:1;padding:8px;overflow-y:auto}
+.sb-sec-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.3);padding:4px 8px 6px;letter-spacing:1px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:rgba(255,255,255,.6);font-size:13px;font-weight:500;transition:all .15s;margin-bottom:2px;position:relative}
+.sb-item:hover{background:rgba(255,255,255,.08);color:white}
+.sb-item.active{background:rgba(255,255,255,.12);color:white}
+.sb-item.active::before{content:'';position:absolute;right:0;top:6px;bottom:6px;width:3px;background:#C4B5FD;border-radius:0 3px 3px 0}
+.sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.sb-badge{margin-right:auto;background:var(--red);color:white;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px}
+.sb-footer{padding:10px;border-top:1px solid rgba(255,255,255,.07)}
+.sb-logout{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:rgba(255,255,255,.5);font-size:13px;transition:all .15s}
+.sb-logout:hover{color:#FC8181;background:rgba(252,129,129,.08)}
+.main{margin-right:230px;flex:1;display:flex;flex-direction:column}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 1px 4px rgba(11,37,69,.06)}
+.tb-left h1{font-size:15px;font-weight:700}.tb-left p{font-size:11px;color:var(--text3);margin-top:2px}
+.tb-right{display:flex;gap:8px}
+.tb-btn{width:34px;height:34px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text2);transition:all .15s}
+.tb-btn:hover{background:var(--navy);color:white;border-color:var(--navy)}
+.content{padding:20px 24px;flex:1}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.card-header{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-title{font-size:14px;font-weight:700}.card-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.two-col{display:grid;grid-template-columns:280px 1fr;gap:16px;align-items:start}
+.case-list{overflow-y:auto;max-height:calc(100vh - 200px)}
+.case-item{padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+.case-item:hover{background:var(--surface2)}
+.case-item.active{background:var(--purple-l);border-right:3px solid var(--purple)}
+.case-name{font-size:13px;font-weight:700}
+.case-meta{font-size:11px;color:var(--text2);margin-top:2px}
+.case-chips{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.chip-red{background:var(--red-l);color:var(--red)}.chip-amber{background:var(--amber-l);color:var(--amber)}.chip-green{background:var(--green-l);color:var(--green)}.chip-blue{background:var(--blue-l);color:var(--blue)}.chip-purple{background:var(--purple-l);color:var(--purple)}.chip-teal{background:var(--teal-l);color:var(--teal)}.chip-navy{background:#E8EDF7;color:var(--navy)}.chip-new{background:var(--red-l);color:var(--red);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+.btn{padding:8px 16px;border-radius:var(--r-sm);font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:6px}
+.btn-navy{background:var(--navy);color:white}.btn-navy:hover{background:var(--navy2)}
+.btn-teal{background:var(--teal);color:white}.btn-teal:hover{background:#0a5e59}
+.btn-purple{background:var(--purple);color:white}.btn-purple:hover{background:#4c1d95}
+.btn-green{background:var(--green);color:white}.btn-green:hover{background:#076b3c}
+.btn-red{background:var(--red);color:white}.btn-red:hover{background:#991818}
+.btn-outline{background:var(--surface);color:var(--text2);border:1.5px solid var(--border2)}.btn-outline:hover{background:var(--surface2);border-color:var(--navy);color:var(--navy)}
+.btn-sm{padding:5px 12px;font-size:11px}
+.form-group{margin-bottom:12px}.form-lbl{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;display:block}
+.form-ctrl{width:100%;padding:8px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--surface2);font-family:'Cairo',sans-serif;font-size:13px;color:var(--text1);outline:none;direction:rtl;transition:all .15s}
+.form-ctrl:focus{border-color:var(--navy2);background:white;box-shadow:0 0 0 3px rgba(11,37,69,.1)}
+.form-ta{width:100%;padding:8px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--surface2);font-family:'Cairo',sans-serif;font-size:13px;color:var(--text1);outline:none;direction:rtl;resize:none;min-height:70px;transition:all .15s}
+.form-ta:focus{border-color:var(--navy2);background:white}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px 18px}
+.ms{background:var(--surface2);border-radius:var(--r-sm);padding:10px;text-align:center}
+.ms-val{font-size:22px;font-weight:800}.ms-lbl{font-size:10px;color:var(--text2);margin-top:2px}
+.tl{padding:14px 18px}
+.tl-item{display:flex;gap:10px;margin-bottom:14px;position:relative}
+.tl-item:not(:last-child)::before{content:'';position:absolute;right:14px;top:28px;bottom:-6px;width:1px;background:var(--border)}
+.tl-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;border:2px solid white;box-shadow:0 0 0 1px var(--border)}
+.tl-body{flex:1;background:var(--surface2);border-radius:var(--r-sm);padding:9px 12px}
+.tl-head{display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+.tl-actor{font-size:12px;font-weight:700}.tl-time{font-size:11px;color:var(--text3);margin-right:auto}
+.tl-text{font-size:12px;color:var(--text2);line-height:1.5}
+.modal-ov{position:fixed;inset:0;background:rgba(11,25,46,.55);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-ov.open{display:flex}
+.modal{background:var(--surface);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:500px;max-width:100%;max-height:90vh;overflow-y:auto;animation:fu .2s ease}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.mh{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
+.mt{font-size:16px;font-weight:700}.ms2{font-size:12px;color:var(--text2);margin-top:3px}
+.mx{cursor:pointer;color:var(--text3);font-size:18px;padding:2px 6px;border-radius:5px;line-height:1;transition:all .15s}.mx:hover{background:var(--surface2);color:var(--text1)}
+.mb{padding:16px 22px}.mf{padding:12px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.info-box{background:var(--purple-l);border:1px solid #C4B5FD;border-radius:var(--r-sm);padding:10px 14px;font-size:12px;color:var(--purple);line-height:1.7;margin-bottom:14px}
+.warn-box{background:var(--amber-l);border:1px solid #FDE68A;border-radius:var(--r-sm);padding:10px 14px;font-size:12px;color:var(--amber);line-height:1.7}
+#toast{position:fixed;bottom:20px;left:20px;background:var(--navy);color:white;padding:11px 18px;border-radius:var(--r-sm);font-size:13px;font-weight:500;box-shadow:0 8px 24px rgba(11,37,69,.3);z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;max-width:340px}
+#toast.show{transform:translateY(0);opacity:1}#toast.ok{background:var(--green)}#toast.err{background:var(--red)}
+@media(max-width:1000px){.sb{display:none}.main{margin-right:0}.two-col{grid-template-columns:1fr}}
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,doc,addDoc,setDoc,getDoc,getDocs,updateDoc,query,where,orderBy,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyC3aj0-1niPU738buidi_7qJq_XzJ143yo",authDomain:"student-behavior-7bd27.firebaseapp.com",projectId:"student-behavior-7bd27",storageBucket:"student-behavior-7bd27.firebasestorage.app",messagingSenderId:"401144670363",appId:"1:401144670363:web:7b6cda0938be4aa763fe3e"});
+const db=getFirestore(app);
+window.$db=db;window.$fb={collection,doc,addDoc,setDoc,getDoc,getDocs,updateDoc,query,where,orderBy,serverTimestamp};window.$fbReady=true;
+</script>
+</head>
+<body>
+<aside class="sb">
+  <div class="sb-logo"><div class="sb-logo-icon">🤝</div><div><div class="sb-logo-name">نظام المتابعة</div><div class="sb-logo-sub">الطلابية السلوكية</div></div></div>
+  <div class="sb-user"><div class="sb-av" id="sb-av">أ</div><div><div class="sb-uname" id="sb-name">الأخصائي</div><div class="sb-urole">أخصائي اجتماعي</div></div></div>
+  <nav class="sb-nav">
+    <div class="sb-sec-lbl">الحالات</div>
+    <div class="sb-item active" id="sbt-open"    onclick="switchTab('open')"><span class="sb-icon">📥</span>حالات جديدة<span class="sb-badge" id="badge-open">0</span></div>
+    <div class="sb-item"        id="sbt-follow"  onclick="switchTab('follow')"><span class="sb-icon">🔄</span>قيد المتابعة</div>
+    <div class="sb-item"        id="sbt-referred"onclick="switchTab('referred')"><span class="sb-icon">🧠</span>محولة للنفسي</div>
+    <div class="sb-item"        id="sbt-closed"  onclick="switchTab('closed')"><span class="sb-icon">✅</span>مغلقة</div>
+  </nav>
+  <div class="sb-footer"><div class="sb-logout" onclick="logout()"><span class="sb-icon">🚪</span>تسجيل الخروج</div></div>
+</aside>
+<div class="main">
+  <div class="topbar">
+    <div class="tb-left"><h1 id="tb-title">الحالات الجديدة</h1><p id="tb-sub"></p></div>
+    <div class="tb-right"><div class="tb-btn" onclick="refreshCurrent()">🔄</div></div>
+  </div>
+  <div class="content" id="content"><div style="text-align:center;padding:50px;color:var(--text3)">⏳</div></div>
+</div>
+
+<!-- Refer to psychologist modal -->
+<div class="modal-ov" id="modal-psych"><div class="modal">
+  <div class="mh"><div><div class="mt">🧠 تحويل للأخصائي النفسي</div><div class="ms2">سيرى الأخصائي النفسي كامل السجل</div></div><div class="mx" onclick="closeModal('modal-psych')">✕</div></div>
+  <div class="mb">
+    <div class="info-box" id="psych-preview"></div>
+    <div class="warn-box">⚠️ بعد التحويل يظهر الملف لدى الأخصائي النفسي والمدير.</div>
+    <div style="margin-top:12px">
+      <div class="form-group"><label class="form-lbl">سبب التحويل</label><textarea class="form-ta" id="psych-reason" placeholder="اكتب تقييمك وسبب الإحالة..."></textarea></div>
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-lbl">نوع الاستشارة</label>
+          <select class="form-ctrl" id="psych-consult"><option>تقييم نفسي</option><option>جلسة دعم</option><option>تدخل فوري</option><option>خطة علاجية</option></select>
+        </div>
+        <div class="form-group"><label class="form-lbl">الأولوية</label>
+          <select class="form-ctrl" id="psych-priority"><option value="normal">عادية</option><option value="high">مرتفعة</option><option value="urgent">عاجلة</option></select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mf"><button class="btn btn-outline" onclick="closeModal('modal-psych')">إلغاء</button><button class="btn btn-teal" onclick="confirmPsych()">🧠 تحويل للأخصائي النفسي</button></div>
+</div></div>
+<div id="toast"></div>
+<script>
+const sess=JSON.parse(sessionStorage.getItem('sbs_user')||'null');
+if(!sess||sess.role!=='social'){window.location.href='login.html';throw new Error();}
+document.getElementById('sb-av').textContent=(sess.name||'').charAt(0)||'أ';
+document.getElementById('sb-name').textContent=sess.name||'الأخصائي';
+
+const DEGBG={1:'#EBF0FF',2:'#E8F9F1',3:'#FFF5E6',4:'#FEF2F2'};
+const DEGCL={1:'#1A56DB',2:'#0A7A4A',3:'#B05E0A',4:'#B91C1C'};
+const DEGNM={1:'١',2:'٢',3:'٣',4:'٤'};
+let _curTab='open',_curCaseId=null,_psychCaseId=null;
+
+function switchTab(tab){
+  _curTab=tab;_curCaseId=null;
+  ['open','follow','referred','closed'].forEach(t=>{const el=document.getElementById('sbt-'+t);if(el)el.classList.toggle('active',t===tab);});
+  const titles={open:'الحالات الجديدة',follow:'قيد المتابعة',referred:'محولة للأخصائي النفسي',closed:'الحالات المغلقة'};
+  document.getElementById('tb-title').textContent=titles[tab]||tab;
+  loadCases(tab);
+}
+function refreshCurrent(){switchTab(_curTab);}
+
+async function loadCases(tab){
+  const el=document.getElementById('content');
+  el.innerHTML='<div style="text-align:center;padding:50px;color:var(--text3)">⏳ جارٍ التحميل...</div>';
+  if(!window.$fbReady){el.innerHTML='<div class="card" style="padding:30px;text-align:center;color:var(--red)">Firebase غير متصل</div>';return;}
+  try{
+    let q;
+    if(tab==='open')   q=window.$fb.query(window.$fb.collection(window.$db,'cases'),window.$fb.where('stage','==','social'),window.$fb.where('status','==','open'));
+    else if(tab==='follow') q=window.$fb.query(window.$fb.collection(window.$db,'cases'),window.$fb.where('stage','==','social'),window.$fb.where('status','==','followup'));
+    else if(tab==='referred') q=window.$fb.query(window.$fb.collection(window.$db,'cases'),window.$fb.where('stage','==','psychologist'));
+    else q=window.$fb.query(window.$fb.collection(window.$db,'cases'),window.$fb.where('status','==','closed'));
+    const snap=await window.$fb.getDocs(q);
+    const cases=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(tab==='open'){const b=document.getElementById('badge-open');if(b)b.textContent=cases.length||'0';}
+    document.getElementById('tb-sub').textContent=`${cases.length} حالة`;
+    if(cases.length===0){el.innerHTML=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:36px;margin-bottom:12px">✅</div><div style="font-size:15px;font-weight:700">لا توجد حالات في هذا القسم</div></div>`;return;}
+    el.innerHTML=`<div class="two-col">
+      <div class="card"><div class="card-header"><div class="card-title">قائمة الحالات</div><span style="font-size:12px;color:var(--text3)">${cases.length}</span></div>
+        <div class="case-list">${cases.map(c=>caseListItem(c)).join('')}</div>
+      </div>
+      <div id="case-detail"><div style="padding:40px;text-align:center;color:var(--text3)"><div style="font-size:32px;margin-bottom:10px">👤</div>اختر حالة لعرض التفاصيل</div></div>
+    </div>`;
+  }catch(e){el.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;}
+}
+
+function caseListItem(c){
+  const risk=c.degree>=4?'red':c.degree>=3?'amber':'navy';
+  return `<div class="case-item ${_curCaseId===c.id?'active':''}" id="ci-${c.id}" onclick="openCase('${c.id}')">
+    <div class="case-name">${c.studentName||c.studentId}</div>
+    <div class="case-meta">${c.classId||''} · ${c.referredBy||'—'}</div>
+    <div class="case-chips">
+      <span class="chip chip-${risk}">${c.degree>=4?'خطورة عالية':c.degree>=3?'متوسطة':'منخفضة'}</span>
+      ${c.priority==='urgent'?'<span class="chip chip-red">عاجل</span>':c.priority==='high'?'<span class="chip chip-amber">مرتفع</span>':''}
+      ${c.status==='open'?'<span class="chip chip-new">جديد</span>':''}
+    </div>
+  </div>`;
+}
+
+async function openCase(id){
+  _curCaseId=id;
+  document.querySelectorAll('.case-item').forEach(el=>el.classList.remove('active'));
+  const ciEl=document.getElementById('ci-'+id);if(ciEl)ciEl.classList.add('active');
+  const det=document.getElementById('case-detail');
+  if(!det){loadCases(_curTab);return;}
+  det.innerHTML='<div style="text-align:center;padding:30px;color:var(--text3)">⏳</div>';
+  try{
+    const snap=await window.$fb.getDoc(window.$fb.doc(window.$db,'cases',id));
+    const c={id:snap.id,...snap.data()};
+    const viols=c.violationId?(await window.$fb.getDocs(window.$fb.query(window.$fb.collection(window.$db,'violations'),window.$fb.where('studentId','==',c.studentId)))).docs.map(d=>({id:d.id,...d.data()})):[];
+    const tl=c.timeline||[];
+    const canRefer=c.stage!=='psychologist'&&c.status!=='closed';
+    det.innerHTML=`<div class="card">
+      <div style="padding:18px 20px;display:flex;gap:14px;align-items:flex-start">
+        <div style="width:44px;height:44px;border-radius:10px;background:${DEGBG[c.degree||1]};color:${DEGCL[c.degree||1]};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0">${DEGNM[c.degree||1]}</div>
+        <div style="flex:1">
+          <div style="font-size:17px;font-weight:700">${c.studentName}</div>
+          <div style="font-size:12px;color:var(--text2)">${c.classId||''} · أُحيل من: ${c.referredBy||'—'}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+            <span class="chip chip-${c.status==='open'?'new':c.status==='followup'?'amber':c.status==='closed'?'green':'teal'}">${c.status==='open'?'جديد':c.status==='followup'?'متابعة':c.status==='closed'?'مغلق':'محول نفسي'}</span>
+            ${c.priority==='urgent'?'<span class="chip chip-red">عاجل</span>':c.priority==='high'?'<span class="chip chip-amber">مرتفع</span>':''}
+            <span class="chip chip-navy">${viols.length} مخالفة</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          ${canRefer?`<button class="btn btn-teal btn-sm" onclick="openPsychRef('${id}','${c.studentName}',${c.degree||1})">🧠 تحويل للنفسي</button>`:''}
+          ${c.status!=='closed'?`<button class="btn btn-green btn-sm" onclick="closeCase('${id}')">✓ إغلاق الحالة</button>`:''}
+        </div>
+      </div>
+      <div style="margin:0 18px 14px;background:var(--purple-l);border:1px solid #C4B5FD;border-radius:var(--r-sm);padding:10px 14px;font-size:12px;color:var(--purple);line-height:1.7">
+        <strong>سبب الإحالة:</strong> ${c.escalationReason||c.type||'—'}<br>
+        ${c.consultType?`<strong>نوع الاستشارة:</strong> ${c.consultType}<br>`:''}
+      </div>
+      <div style="border-top:1px solid var(--border);padding:14px 18px">
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px">السجل الكامل</div>
+        <div class="tl">${tl.map(t=>`
+          <div class="tl-item">
+            <div class="tl-icon" style="background:var(--surface3)">👤</div>
+            <div class="tl-body">
+              <div class="tl-head"><span class="tl-actor">${t.actor}</span><span class="chip chip-navy" style="font-size:10px">${t.action}</span><span class="tl-time">${t.time?new Date(t.time).toLocaleDateString('ar-QA'):''}</span></div>
+              ${t.notes?`<div class="tl-text">${t.notes}</div>`:''}
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding:14px 18px">
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px">إضافة إجراء</div>
+        <div class="form-grid-2" style="margin-bottom:8px">
+          <div class="form-group"><label class="form-lbl">نوع الإجراء</label>
+            <select class="form-ctrl" id="act-type-${id}"><option>مقابلة مع الطالب</option><option>تواصل مع ولي الأمر</option><option>جلسة إرشادية</option><option>تحذير رسمي</option><option>خطة تدخل</option></select>
+          </div>
+          <div class="form-group"><label class="form-lbl">الحالة بعد الإجراء</label>
+            <select class="form-ctrl" id="act-status-${id}"><option value="">لا تغيير</option><option value="followup">متابعة مستمرة</option><option value="closed">إغلاق الحالة</option></select>
+          </div>
+        </div>
+        <div class="form-group"><textarea class="form-ta" id="act-notes-${id}" placeholder="تفاصيل الإجراء ونتيجته..."></textarea></div>
+        <button class="btn btn-navy btn-sm" onclick="saveAction('${id}')">💾 حفظ الإجراء</button>
+      </div>
+    </div>`;
+  }catch(e){det.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;}
+}
+
+async function saveAction(caseId){
+  const type=document.getElementById(`act-type-${caseId}`)?.value;
+  const notes=document.getElementById(`act-notes-${caseId}`)?.value||'';
+  const newStatus=document.getElementById(`act-status-${caseId}`)?.value;
+  if(!notes){toast('⚠️ أدخل تفاصيل الإجراء','err');return;}
+  try{
+    const snap=await window.$fb.getDoc(window.$fb.doc(window.$db,'cases',caseId));
+    const tl=[...(snap.data()?.timeline||[]),{actor:sess.name,role:'social',action:type,notes,time:new Date().toISOString()}];
+    const upd={timeline:tl,updatedAt:window.$fb.serverTimestamp()};
+    if(newStatus)upd.status=newStatus;
+    await window.$fb.updateDoc(window.$fb.doc(window.$db,'cases',caseId),upd);
+    toast('✅ تم حفظ الإجراء','ok');
+    openCase(caseId);
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+function openPsychRef(id,name,degree){
+  _psychCaseId=id;
+  document.getElementById('psych-preview').innerHTML=`<strong>الطالب:</strong> ${name}<br><strong>الدرجة:</strong> ${degree}`;
+  document.getElementById('psych-reason').value='';
+  document.getElementById('modal-psych').classList.add('open');
+}
+
+async function confirmPsych(){
+  if(!_psychCaseId)return;
+  const reason=document.getElementById('psych-reason').value;
+  const consult=document.getElementById('psych-consult').value;
+  const priority=document.getElementById('psych-priority').value;
+  try{
+    const snap=await window.$fb.getDoc(window.$fb.doc(window.$db,'cases',_psychCaseId));
+    const tl=[...(snap.data()?.timeline||[]),{actor:sess.name,role:'social',action:`تحويل للأخصائي النفسي — ${consult}`,notes:reason,time:new Date().toISOString()}];
+    await window.$fb.updateDoc(window.$fb.doc(window.$db,'cases',_psychCaseId),{stage:'psychologist',status:'open',psychReason:reason,consultType:consult,priority,timeline:tl,referredToByName:sess.name,updatedAt:window.$fb.serverTimestamp()});
+    closeModal('modal-psych');
+    toast('🧠 تم تحويل الحالة للأخصائي النفسي','ok');
+    switchTab('referred');
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+async function closeCase(id){
+  try{
+    const snap=await window.$fb.getDoc(window.$fb.doc(window.$db,'cases',id));
+    const tl=[...(snap.data()?.timeline||[]),{actor:sess.name,role:'social',action:'إغلاق الحالة',time:new Date().toISOString()}];
+    await window.$fb.updateDoc(window.$fb.doc(window.$db,'cases',id),{status:'closed',closedAt:window.$fb.serverTimestamp(),timeline:tl});
+    toast('✅ تم إغلاق الحالة','ok');
+    switchTab(_curTab);
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-ov').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');}));
+function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='show'+(type?' '+type:'');clearTimeout(el._t);el._t=setTimeout(()=>el.className='',3500);}
+function logout(){sessionStorage.removeItem('sbs_user');window.location.href='login.html';}
+switchTab('open');
+</script>
+</body>
+</html>

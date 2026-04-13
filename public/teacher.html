@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شاشة المعلم | نظام متابعة السلوك</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0B2545;--navy2:#163A6B;--navy3:#1E4D8C;
+  --gold:#C9913A;--gold2:#E8B85A;
+  --bg:#F0F2F8;--surface:#fff;--surface2:#F5F7FC;--surface3:#ECEEF7;
+  --border:#DDE1F0;--border2:#C8CEDF;
+  --text1:#0B1A2E;--text2:#4A5578;--text3:#8892B0;
+  --blue:#1A56DB;--blue-l:#EBF0FF;
+  --green:#0A7A4A;--green-l:#E8F9F1;
+  --red:#B91C1C;--red-l:#FEF2F2;
+  --amber:#B05E0A;--amber-l:#FFF5E6;
+  --purple:#5B21B6;--purple-l:#F2EEFF;
+  --r:10px;--r-sm:6px;
+  --sh:0 2px 12px rgba(11,37,69,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text1);font-size:14px;min-height:100vh;display:flex}
+
+/* SIDEBAR */
+.sb{width:230px;flex-shrink:0;background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;right:0;bottom:0;z-index:100}
+.sb-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.sb-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sb-logo-name{font-size:12px;font-weight:700;color:white}
+.sb-logo-sub{font-size:10px;color:rgba(255,255,255,.45);margin-top:1px}
+.sb-user{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px}
+.sb-av{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--gold2);flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:600;color:white}
+.sb-urole{font-size:11px;color:rgba(255,255,255,.5)}
+.sb-nav{flex:1;padding:8px;overflow-y:auto}
+.sb-sec{margin-bottom:14px}
+.sb-sec-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.3);padding:0 8px 5px;letter-spacing:1px;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:rgba(255,255,255,.6);font-size:13px;font-weight:500;transition:all .15s;margin-bottom:2px;position:relative}
+.sb-item:hover{background:rgba(255,255,255,.08);color:white}
+.sb-item.active{background:rgba(255,255,255,.12);color:white}
+.sb-item.active::before{content:'';position:absolute;right:0;top:6px;bottom:6px;width:3px;background:var(--gold);border-radius:0 3px 3px 0}
+.sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.sb-badge{margin-right:auto;background:var(--red);color:white;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center}
+.sb-footer{padding:10px;border-top:1px solid rgba(255,255,255,.07)}
+.sb-logout{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:rgba(255,255,255,.5);font-size:13px;font-weight:500;transition:all .15s}
+.sb-logout:hover{color:#FC8181;background:rgba(252,129,129,.08)}
+
+/* MAIN */
+.main{margin-right:230px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 1px 4px rgba(11,37,69,.06)}
+.tb-left h1{font-size:15px;font-weight:700;color:var(--text1)}
+.tb-left p{font-size:11px;color:var(--text3);margin-top:2px}
+.tb-right{display:flex;align-items:center;gap:10px}
+.tb-btn{width:34px;height:34px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text2);transition:all .15s}
+.tb-btn:hover{background:var(--navy);color:white;border-color:var(--navy)}
+.cls-sel{padding:7px 12px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface2);font-family:'Cairo',sans-serif;font-size:13px;color:var(--text1);outline:none;cursor:pointer}
+.cls-sel:focus{border-color:var(--navy2)}
+.content{padding:20px 24px;flex:1}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.card-header{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-title{font-size:14px;font-weight:700;color:var(--text1)}
+.card-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.stat::after{content:'';position:absolute;top:0;right:0;width:4px;height:100%}
+.stat.blue::after{background:var(--blue)}
+.stat.green::after{background:var(--green)}
+.stat.red::after{background:var(--red)}
+.stat.amber::after{background:var(--amber)}
+.stat-icon{font-size:18px;margin-bottom:6px}
+.stat-lbl{font-size:11px;color:var(--text2);font-weight:500;margin-bottom:4px}
+.stat-val{font-size:26px;font-weight:800;line-height:1}
+.stat-sub{font-size:10px;color:var(--text3);margin-top:3px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{background:var(--surface3);padding:9px 14px;font-size:11px;font-weight:600;color:var(--text2);text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl td{padding:9px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr{transition:background .12s}
+.tbl tbody tr:hover td{background:var(--surface2);cursor:default}
+
+/* Student cell */
+.s-cell{display:flex;align-items:center;gap:9px}
+.s-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.s-name{font-weight:600;font-size:13px}
+.s-id{font-size:10px;color:var(--text3)}
+
+/* Att buttons */
+.att-btns{display:flex;gap:4px}
+.att-btn{width:30px;height:30px;border-radius:7px;border:1.5px solid var(--border2);background:var(--surface2);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:inherit}
+.att-btn:hover{border-color:var(--text2)}
+.att-btn.present{background:var(--green-l);border-color:var(--green);color:var(--green)}
+.att-btn.absent{background:var(--red-l);border-color:var(--red);color:var(--red)}
+.att-btn.late{background:var(--amber-l);border-color:var(--amber);color:var(--amber)}
+
+/* Chips */
+.chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.chip-red{background:var(--red-l);color:var(--red)}
+.chip-amber{background:var(--amber-l);color:var(--amber)}
+.chip-green{background:var(--green-l);color:var(--green)}
+.chip-blue{background:var(--blue-l);color:var(--blue)}
+.chip-navy{background:#E8EDF7;color:var(--navy)}
+
+/* Grid layout */
+.page-grid{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start}
+
+/* Violation form */
+.viol-form{padding:16px 18px}
+.form-group{margin-bottom:12px}
+.form-lbl{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;display:block}
+.form-ctrl{width:100%;padding:8px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--surface2);font-family:'Cairo',sans-serif;font-size:13px;color:var(--text1);outline:none;direction:rtl;transition:all .15s}
+.form-ctrl:focus{border-color:var(--navy2);background:white;box-shadow:0 0 0 3px rgba(11,37,69,.1)}
+.form-ctrl::placeholder{color:var(--text3)}
+.form-ta{width:100%;padding:8px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--surface2);font-family:'Cairo',sans-serif;font-size:13px;color:var(--text1);outline:none;direction:rtl;resize:none;min-height:65px;transition:all .15s}
+.form-ta:focus{border-color:var(--navy2);background:white;box-shadow:0 0 0 3px rgba(11,37,69,.1)}
+
+/* Degree pills */
+.deg-pills{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.dp{padding:7px 4px;border-radius:var(--r-sm);border:1.5px solid var(--border2);text-align:center;cursor:pointer;transition:all .15s;font-size:11px;font-weight:700;color:var(--text2);background:var(--surface2)}
+.dp span{font-size:17px;display:block;margin-bottom:2px}
+.dp:hover{border-color:var(--navy)}
+.dp.d1{background:var(--blue-l);border-color:var(--blue);color:var(--blue)}
+.dp.d2{background:var(--green-l);border-color:var(--green);color:var(--green)}
+.dp.d3{background:var(--amber-l);border-color:var(--amber);color:var(--amber)}
+.dp.d4{background:var(--red-l);border-color:var(--red);color:var(--red)}
+
+/* Buttons */
+.btn{padding:8px 16px;border-radius:var(--r-sm);font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:6px}
+.btn-navy{background:var(--navy);color:white}
+.btn-navy:hover{background:var(--navy2);box-shadow:0 3px 10px rgba(11,37,69,.3)}
+.btn-red{background:var(--red);color:white}
+.btn-red:hover{background:#991818}
+.btn-outline{background:var(--surface);color:var(--text2);border:1.5px solid var(--border2)}
+.btn-outline:hover{background:var(--surface2);border-color:var(--navy);color:var(--navy)}
+.btn-sm{padding:5px 12px;font-size:11px}
+.btn-row{display:flex;gap:8px}
+
+/* Viol log */
+.vlog-item{padding:11px 18px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
+.vlog-item:last-child{border-bottom:none}
+.vlog-deg{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.vlog-info{flex:1}
+.vlog-name{font-size:13px;font-weight:700}
+.vlog-desc{font-size:12px;color:var(--text2);margin-top:2px}
+.vlog-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.vlog-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:10px}
+
+/* Toolbar */
+.toolbar{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center}
+.search{flex:1;display:flex;align-items:center;gap:7px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:7px 11px;transition:all .15s}
+.search:focus-within{border-color:var(--navy2);background:white}
+.search input{border:none;background:none;outline:none;font-family:'Cairo',sans-serif;font-size:13px;color:var(--text1);flex:1;direction:rtl}
+.search input::placeholder{color:var(--text3)}
+
+/* Firebase status */
+.fb-status{display:flex;align-items:center;gap:6px;font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600}
+.fb-status.connected{background:var(--green-l);color:var(--green)}
+.fb-status.offline{background:var(--amber-l);color:var(--amber)}
+.fb-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* Toast */
+#toast{position:fixed;bottom:20px;left:20px;background:var(--navy);color:white;padding:11px 18px;border-radius:var(--r-sm);font-size:13px;font-weight:500;box-shadow:0 8px 24px rgba(11,37,69,.3);z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;max-width:340px}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.ok{background:var(--green)}
+#toast.err{background:var(--red)}
+
+/* Modal */
+.modal-ov{position:fixed;inset:0;background:rgba(11,25,46,.55);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-ov.open{display:flex}
+.modal{background:var(--surface);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:480px;max-width:100%;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.mh{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between}
+.mt{font-size:16px;font-weight:700}
+.ms{font-size:12px;color:var(--text2);margin-top:3px}
+.mx{cursor:pointer;color:var(--text3);font-size:18px;padding:2px 6px;border-radius:5px;line-height:1;transition:all .15s}
+.mx:hover{background:var(--surface2);color:var(--text1)}
+.mb{padding:16px 22px}
+.mf{padding:12px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+@media(max-width:900px){.sb{display:none}.main{margin-right:0}.page-grid{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<!-- Firebase SDK -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection,doc,addDoc,setDoc,getDoc,getDocs,query,where,orderBy,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const FB={apiKey:"AIzaSyC3aj0-1niPU738buidi_7qJq_XzJ143yo",authDomain:"student-behavior-7bd27.firebaseapp.com",projectId:"student-behavior-7bd27",storageBucket:"student-behavior-7bd27.firebasestorage.app",messagingSenderId:"401144670363",appId:"1:401144670363:web:7b6cda0938be4aa763fe3e"};
+const app=initializeApp(FB);
+window.$db=getFirestore(app);
+window.$fb={collection,doc,addDoc,setDoc,getDoc,getDocs,query,where,orderBy,serverTimestamp};
+window.$fbReady=true;
+document.getElementById('fb-dot').className='fb-status connected';
+document.getElementById('fb-dot').innerHTML='<span class="fb-dot"></span> Firebase متصل';
+</script>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">🏫</div>
+    <div>
+      <div class="sb-logo-name">نظام المتابعة</div>
+      <div class="sb-logo-sub">الطلابية السلوكية</div>
+    </div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-av" id="sb-av">أ</div>
+    <div>
+      <div class="sb-uname" id="sb-name">المعلم</div>
+      <div class="sb-urole">معلم</div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">
+      <div class="sb-sec-lbl">الرئيسية</div>
+      <div class="sb-item active" id="sbt-att" onclick="switchTab('att')">
+        <span class="sb-icon">📋</span>الحضور والغياب
+      </div>
+      <div class="sb-item" id="sbt-viol" onclick="switchTab('viol')">
+        <span class="sb-icon">⚠️</span>تسجيل مخالفة
+      </div>
+      <div class="sb-item" id="sbt-log" onclick="switchTab('log')">
+        <span class="sb-icon">📜</span>سجل مخالفاتي
+      </div>
+    </div>
+  </nav>
+  <div class="sb-footer">
+    <div class="sb-logout" onclick="logout()">
+      <span class="sb-icon">🚪</span>تسجيل الخروج
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-left">
+      <h1 id="tb-title">الحضور والغياب</h1>
+      <p id="tb-sub"></p>
+    </div>
+    <div class="tb-right">
+      <div id="fb-dot" class="fb-status offline"><span class="fb-dot"></span> غير متصل</div>
+      <select class="cls-sel" id="cls-sel" onchange="loadAtt()">
+        <option value="5-1">الخامس — 1</option>
+        <option value="5-2">الخامس — 2</option>
+        <option value="5-3">الخامس — 3</option>
+        <option value="5-4">الخامس — 4</option>
+        <option value="5-5">الخامس — 5</option>
+        <option value="5-6">الخامس — 6</option>
+        <option value="5-7">الخامس — 7</option>
+        <option value="5-8">الخامس — 8</option>
+        <option value="5-9">الخامس — 9</option>
+        <option value="5-10">الخامس — 10</option>
+        <option value="6-1">السادس — 1</option>
+        <option value="6-2">السادس — 2</option>
+        <option value="6-3">السادس — 3</option>
+        <option value="6-4">السادس — 4</option>
+        <option value="6-5">السادس — 5</option>
+        <option value="6-6">السادس — 6</option>
+        <option value="6-7">السادس — 7</option>
+        <option value="6-8">السادس — 8</option>
+        <option value="6-9">السادس — 9</option>
+        <option value="6-10">السادس — 10</option>
+      </select>
+      <div class="tb-btn" onclick="window.print()" title="طباعة">🖨️</div>
+    </div>
+  </div>
+
+  <div class="content" id="content"></div>
+</div>
+
+<!-- Violation Modal -->
+<div class="modal-ov" id="viol-modal">
+  <div class="modal">
+    <div class="mh">
+      <div><div class="mt">تسجيل مخالفة سلوكية</div><div class="ms" id="viol-stname">—</div></div>
+      <div class="mx" onclick="closeModal()">✕</div>
+    </div>
+    <div class="mb">
+      <div class="form-group">
+        <label class="form-lbl">الطالب</label>
+        <select class="form-ctrl" id="viol-st"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">درجة المخالفة</label>
+        <div class="deg-pills" id="deg-pills">
+          <div class="dp" onclick="selDeg(1)"><span>١</span>الأولى</div>
+          <div class="dp" onclick="selDeg(2)"><span>٢</span>الثانية</div>
+          <div class="dp" onclick="selDeg(3)"><span>٣</span>الثالثة</div>
+          <div class="dp" onclick="selDeg(4)"><span>٤</span>الرابعة</div>
+        </div>
+      </div>
+      <div class="form-group" id="vtype-group" style="display:none">
+        <label class="form-lbl">نوع المخالفة</label>
+        <select class="form-ctrl" id="viol-type"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">التكرار</label>
+        <select class="form-ctrl" id="viol-rep">
+          <option value="first">أول مرة</option>
+          <option value="second">ثاني مرة</option>
+          <option value="third">ثالث مرة أو أكثر</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">ملاحظات</label>
+        <textarea class="form-ta" id="viol-notes" placeholder="وصف تفصيلي للموقف..."></textarea>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-outline" onclick="saveViol('save')">💾 حفظ في الملف</button>
+      <button class="btn btn-red" onclick="saveViol('raise')">📤 رفع للمشرف</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── Session check ─────────────────────────────────────────────
+const sess = JSON.parse(sessionStorage.getItem('sbs_user')||'null');
+if(!sess||sess.role!=='teacher'){
+  window.location.href='login.html'; throw new Error('Not authorized');
+}
+document.getElementById('sb-av').textContent   = (sess.name||'').charAt(0)||'م';
+document.getElementById('sb-name').textContent = sess.name||'المعلم';
+
+// ── Violations config ─────────────────────────────────────────
+const VIOLS={
+  1:['التأخر عن حضور الحصة','النوم داخل الفصل','تناول الطعام والمشروبات','المقاطعة المستمرة للشرح','عدم المشاركة في الطابور','التأخر الصباحي'],
+  2:['إحضار هاتف جوال','الهروب من الحصة','شجار لفظي مع زميل','عدم أداء الواجبات','عدم الالتزام بالزي المدرسي','الغياب بدون عذر'],
+  3:['الهروب من المدرسة','إساءة الأدب مع المعلم','مشاجرة بالأيدي','رفض قرارات الإدارة','إتلاف ممتلكات المدرسة'],
+  4:['حيازة مخدرات','حيازة أسلحة أو أدوات حادة','تحرش جنسي','تزوير أوراق رسمية','إحضار مواد مخلة بالآداب'],
+};
+const DEG_LBL={1:'الأولى',2:'الثانية',3:'الثالثة',4:'الرابعة'};
+const COLORS=['#1A56DB','#0A7A4A','#B05E0A','#B91C1C','#5B21B6','#0C7872','#C9913A','#374151'];
+const CLASSES_LABEL={'5-1':'الخامس—1','5-2':'الخامس—2','5-3':'الخامس—3','5-4':'الخامس—4','5-5':'الخامس—5','5-6':'الخامس—6','5-7':'الخامس—7','5-8':'الخامس—8','5-9':'الخامس—9','5-10':'الخامس—10','6-1':'السادس—1','6-2':'السادس—2','6-3':'السادس—3','6-4':'السادس—4','6-5':'السادس—5','6-6':'السادس—6','6-7':'السادس—7','6-8':'السادس—8','6-9':'السادس—9','6-10':'السادس—10'};
+
+let _students=[], _attMap={}, _deg=0, _viols=[];
+const todayStr=new Date().toISOString().split('T')[0];
+
+// ── Tab switching ─────────────────────────────────────────────
+function switchTab(tab){
+  ['att','viol','log'].forEach(t=>{
+    const el=document.getElementById('sbt-'+t);
+    if(el) el.classList.toggle('active',t===tab);
+  });
+  const titles={att:'الحضور والغياب',viol:'تسجيل مخالفة',log:'سجل مخالفاتي'};
+  document.getElementById('tb-title').textContent=titles[tab]||tab;
+  if(tab==='att') renderAtt();
+  else if(tab==='viol') renderViolForm();
+  else if(tab==='log') renderLog();
+}
+
+// ── Load students ─────────────────────────────────────────────
+async function loadStudents(cls){
+  // Try Firebase first
+  if(window.$fbReady && window.$db){
+    try{
+      const q=window.$fb.query(window.$fb.collection(window.$db,'students'),window.$fb.where('classId','==',cls));
+      const snap=await window.$fb.getDocs(q);
+      if(!snap.empty){
+        _students=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+        return;
+      }
+    }catch(e){console.warn('Firebase read:',e);}
+  }
+  // Fallback: empty with message
+  _students=[];
+}
+
+async function loadAttMap(cls){
+  if(window.$fbReady && window.$db){
+    try{
+      const q=window.$fb.query(window.$fb.collection(window.$db,'attendance'),window.$fb.where('classId','==',cls),window.$fb.where('date','==',todayStr));
+      const snap=await window.$fb.getDocs(q);
+      _attMap={};
+      snap.docs.forEach(d=>{_attMap[d.data().studentId]=d.data().status;});
+      return;
+    }catch(e){console.warn('Att read:',e);}
+  }
+  _attMap={};
+}
+
+async function loadAtt(){
+  const cls=document.getElementById('cls-sel').value;
+  document.getElementById('tb-sub').textContent=`فصل ${CLASSES_LABEL[cls]||cls} — ${todayStr}`;
+  document.getElementById('content').innerHTML=`<div style="text-align:center;padding:40px;color:var(--text3)"><div style="font-size:28px;margin-bottom:10px">⏳</div>جارٍ تحميل بيانات الفصل...</div>`;
+  await loadStudents(cls);
+  await loadAttMap(cls);
+  renderAtt();
+}
+
+// ── Render attendance ─────────────────────────────────────────
+function renderAtt(){
+  const cls=document.getElementById('cls-sel').value;
+  const present=_students.filter(s=>_attMap[s.id]==='present').length;
+  const absent =_students.filter(s=>_attMap[s.id]==='absent').length;
+  const late   =_students.filter(s=>_attMap[s.id]==='late').length;
+
+  const noData=_students.length===0;
+
+  document.getElementById('content').innerHTML=`
+    <div class="stats-row">
+      <div class="stat blue"><div class="stat-icon">👥</div><div class="stat-lbl">إجمالي الطلاب</div><div class="stat-val" style="color:var(--blue)" id="cnt-total">${_students.length}</div></div>
+      <div class="stat green"><div class="stat-icon">✅</div><div class="stat-lbl">حاضر</div><div class="stat-val" style="color:var(--green)" id="cnt-p">${present}</div></div>
+      <div class="stat red"><div class="stat-icon">❌</div><div class="stat-lbl">غائب</div><div class="stat-val" style="color:var(--red)" id="cnt-a">${absent}</div></div>
+      <div class="stat amber"><div class="stat-icon">⏱️</div><div class="stat-lbl">متأخر</div><div class="stat-val" style="color:var(--amber)" id="cnt-l">${late}</div></div>
+    </div>
+    ${noData?`
+    <div class="card" style="padding:40px;text-align:center">
+      <div style="font-size:36px;margin-bottom:12px">📂</div>
+      <div style="font-size:16px;font-weight:700;color:var(--text1);margin-bottom:8px">لا يوجد طلاب في هذا الفصل</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:16px">يرجى رفع بيانات الطلاب من صفحة <strong>إعدادات النظام</strong> أولاً</div>
+      <a href="settings.html" class="btn btn-navy" style="text-decoration:none;display:inline-flex">⚙️ الذهاب للإعدادات</a>
+    </div>`:`
+    <div class="page-grid">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">كشف الحضور والغياب</div><div class="card-sub">يُحفظ تلقائياً في Firebase</div></div>
+          <div style="display:flex;gap:7px">
+            <button class="btn btn-outline btn-sm" onclick="markAll('present')">✓ كل حاضر</button>
+            <button class="btn btn-outline btn-sm" onclick="openViol()">+ مخالفة</button>
+          </div>
+        </div>
+        <div class="toolbar">
+          <div class="search"><span style="color:var(--text3);font-size:14px">🔍</span><input type="text" placeholder="ابحث عن طالب..." oninput="filterStudents(this.value)" id="search-inp"></div>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>#</th><th>اسم الطالب</th><th>الحالة</th><th>مخالفات</th><th>إجراء</th></tr></thead>
+            <tbody id="att-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">مخالفات اليوم</div><span style="font-size:11px;color:var(--text3)">من هذا الفصل</span></div>
+          <div id="today-viols-list">
+            <div style="padding:20px;text-align:center;color:var(--text3);font-size:12px">لا توجد مخالفات مسجلة اليوم</div>
+          </div>
+        </div>
+      </div>
+    </div>`}`;
+
+  if(!noData){
+    renderRows(_students);
+    loadTodayViols(cls);
+  }
+}
+
+function renderRows(list){
+  const tbody=document.getElementById('att-tbody');
+  if(!tbody) return;
+  tbody.innerHTML=list.map((s,i)=>{
+    const st=_attMap[s.id]||'';
+    const c=COLORS[i%COLORS.length];
+    const vc=s.violationCount||0;
+    return `<tr>
+      <td style="color:var(--text3);font-size:12px">${i+1}</td>
+      <td>
+        <div class="s-cell">
+          <div class="s-av" style="background:${c}22;color:${c}">${(s.name||'?').charAt(0)}</div>
+          <div><div class="s-name">${s.name||'—'}</div><div class="s-id">${s.id}</div></div>
+        </div>
+      </td>
+      <td>
+        <div class="att-btns">
+          <button class="att-btn ${st==='present'?'present':''}" onclick="setAtt('${s.id}','present')" title="حاضر">✓</button>
+          <button class="att-btn ${st==='absent'?'absent':''}"  onclick="setAtt('${s.id}','absent')"  title="غائب">✗</button>
+          <button class="att-btn ${st==='late'?'late':''}"      onclick="setAtt('${s.id}','late')"    title="متأخر">⏱</button>
+        </div>
+      </td>
+      <td><span class="chip chip-${vc>2?'red':vc>0?'amber':'navy'}">${vc}</span></td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="openViol('${s.id}')">+ مخالفة</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterStudents(q){
+  const filtered=q?_students.filter(s=>s.name.includes(q)):_students;
+  renderRows(filtered);
+}
+
+async function setAtt(sid,status){
+  const prev=_attMap[sid];
+  _attMap[sid]=status;
+  renderRows(_students);
+  updateStats();
+  if(window.$fbReady&&window.$db){
+    try{
+      const docId=`${sid}_${todayStr}_${document.getElementById('cls-sel').value}`;
+      await window.$fb.setDoc(window.$fb.doc(window.$db,'attendance',docId),{
+        studentId:sid,date:todayStr,classId:document.getElementById('cls-sel').value,
+        status,teacherId:sess.id,teacherName:sess.name,updatedAt:window.$fb.serverTimestamp()
+      });
+    }catch(e){
+      _attMap[sid]=prev; renderRows(_students); updateStats();
+      toast('❌ خطأ في الحفظ: '+e.message,'err');
+    }
+  }
+}
+
+async function markAll(status){
+  _students.forEach(s=>_attMap[s.id]=status);
+  renderRows(_students); updateStats();
+  if(window.$fbReady&&window.$db){
+    try{
+      const cls=document.getElementById('cls-sel').value;
+      await Promise.all(_students.map(s=>{
+        const docId=`${s.id}_${todayStr}_${cls}`;
+        return window.$fb.setDoc(window.$fb.doc(window.$db,'attendance',docId),{
+          studentId:s.id,date:todayStr,classId:cls,status,teacherId:sess.id,updatedAt:window.$fb.serverTimestamp()
+        });
+      }));
+      toast('✅ تم تعيين جميع الطلاب كـ '+(status==='present'?'حاضرين':'غائبين'),'ok');
+    }catch(e){toast('❌ '+e.message,'err');}
+  }
+}
+
+function updateStats(){
+  const p=_students.filter(s=>_attMap[s.id]==='present').length;
+  const a=_students.filter(s=>_attMap[s.id]==='absent').length;
+  const l=_students.filter(s=>_attMap[s.id]==='late').length;
+  const ep=document.getElementById('cnt-p'),ea=document.getElementById('cnt-a'),el=document.getElementById('cnt-l');
+  if(ep)ep.textContent=p; if(ea)ea.textContent=a; if(el)el.textContent=l;
+}
+
+// ── Violation ─────────────────────────────────────────────────
+function openViol(sid=''){
+  _deg=0;
+  document.querySelectorAll('.dp').forEach(el=>el.className='dp');
+  document.getElementById('vtype-group').style.display='none';
+  document.getElementById('viol-notes').value='';
+  const sel=document.getElementById('viol-st');
+  sel.innerHTML='<option value="">— اختر طالباً —</option>'+
+    _students.map(s=>`<option value="${s.id}" ${s.id===sid?'selected':''}>${s.name}</option>`).join('');
+  const sn=_students.find(s=>s.id===sid);
+  document.getElementById('viol-stname').textContent=sn?sn.name:'اختر الطالب من القائمة';
+  document.getElementById('viol-modal').classList.add('open');
+}
+
+function closeModal(){document.getElementById('viol-modal').classList.remove('open');}
+document.getElementById('viol-modal').addEventListener('click',e=>{if(e.target.id==='viol-modal')closeModal();});
+
+function selDeg(d){
+  _deg=d;
+  document.querySelectorAll('.dp').forEach((el,i)=>el.className='dp'+(i+1===d?` d${d}`:''));
+  document.getElementById('vtype-group').style.display='block';
+  document.getElementById('viol-type').innerHTML=VIOLS[d].map(v=>`<option>${v}</option>`).join('');
+}
+
+async function saveViol(action){
+  const sid=document.getElementById('viol-st').value;
+  if(!sid){toast('⚠️ اختر طالباً أولاً','err');return;}
+  if(!_deg){toast('⚠️ اختر درجة المخالفة','err');return;}
+  const type=document.getElementById('viol-type').value||'مخالفة سلوكية';
+  const notes=document.getElementById('viol-notes').value;
+  const rep=document.getElementById('viol-rep').value;
+  const st=_students.find(s=>s.id===sid);
+  const cls=document.getElementById('cls-sel').value;
+  const data={
+    studentId:sid,studentName:st?.name||sid,classId:cls,
+    degree:_deg,type,notes,repeat:rep,
+    status:action==='raise'?'raised_supervisor':'saved',
+    raisedTo:action==='raise'?'supervisor':null,
+    createdBy:sess.id,createdByName:sess.name,createdByRole:'teacher',
+    date:todayStr
+  };
+  if(window.$fbReady&&window.$db){
+    try{
+      await window.$fb.addDoc(window.$fb.collection(window.$db,'violations'),{...data,createdAt:window.$fb.serverTimestamp()});
+      closeModal();
+      toast(action==='raise'?'📤 تم رفع المخالفة للمشرف':'✅ تم حفظ المخالفة في الملف','ok');
+      loadTodayViols(cls);
+      if(st){st.violationCount=(st.violationCount||0)+1;}
+      renderRows(_students);
+    }catch(e){toast('❌ '+e.message,'err');}
+  } else {
+    toast('❌ Firebase غير متصل — لا يمكن الحفظ','err');
+  }
+}
+
+async function loadTodayViols(cls){
+  const box=document.getElementById('today-viols-list');
+  if(!box) return;
+  if(!window.$fbReady||!window.$db){
+    box.innerHTML=`<div style="padding:16px;text-align:center;color:var(--text3);font-size:12px">Firebase غير متصل</div>`;
+    return;
+  }
+  try{
+    const q=window.$fb.query(
+      window.$fb.collection(window.$db,'violations'),
+      window.$fb.where('classId','==',cls),
+      window.$fb.where('date','==',todayStr),
+      window.$fb.where('createdBy','==',sess.id)
+    );
+    const snap=await window.$fb.getDocs(q);
+    if(snap.empty){
+      box.innerHTML=`<div style="padding:16px;text-align:center;color:var(--text3);font-size:12px">لا توجد مخالفات مسجلة اليوم</div>`;
+      return;
+    }
+    const degBg={1:'#EBF0FF',2:'#E8F9F1',3:'#FFF5E6',4:'#FEF2F2'};
+    const degCl={1:'#1A56DB',2:'#0A7A4A',3:'#B05E0A',4:'#B91C1C'};
+    const degNm={1:'١',2:'٢',3:'٣',4:'٤'};
+    box.innerHTML=snap.docs.map(d=>{
+      const v=d.data();
+      return `<div class="vlog-item">
+        <div class="vlog-deg" style="background:${degBg[v.degree]};color:${degCl[v.degree]}">${degNm[v.degree]}</div>
+        <div class="vlog-info">
+          <div class="vlog-name">${v.studentName}</div>
+          <div class="vlog-desc">${v.type}</div>
+          <div class="vlog-meta">${v.repeat==='first'?'أول مرة':v.repeat==='second'?'ثاني مرة':'ثالث+'}</div>
+        </div>
+        <div class="vlog-dot" style="background:${v.status==='raised_supervisor'?'var(--amber)':'var(--green)'}"></div>
+      </div>`;
+    }).join('');
+  }catch(e){box.innerHTML=`<div style="padding:16px;text-align:center;color:var(--red);font-size:12px">خطأ: ${e.message}</div>`;}
+}
+
+// ── Viol form tab ─────────────────────────────────────────────
+function renderViolForm(){
+  const content=document.getElementById('content');
+  if(_students.length===0){
+    content.innerHTML=`<div class="card" style="padding:40px;text-align:center">
+      <div style="font-size:36px;margin-bottom:12px">📂</div>
+      <div style="font-size:15px;font-weight:700;color:var(--text1);margin-bottom:8px">اختر فصلاً وانتظر تحميل الطلاب</div>
+      <button class="btn btn-navy" onclick="loadAtt().then(()=>openViol())">تحميل الفصل الحالي</button>
+    </div>`;
+  } else {
+    content.innerHTML=`<div class="card" style="max-width:500px;margin:0 auto">
+      <div class="card-header"><div class="card-title">تسجيل مخالفة</div></div>
+      <div style="padding:16px 18px">
+        <p style="font-size:13px;color:var(--text2);margin-bottom:14px">اختر الطالب لتسجيل مخالفة في الفصل <strong>${CLASSES_LABEL[document.getElementById('cls-sel').value]||''}</strong></p>
+        <button class="btn btn-navy" onclick="openViol()">+ تسجيل مخالفة جديدة</button>
+      </div>
+    </div>`;
+  }
+}
+
+// ── Log tab ───────────────────────────────────────────────────
+async function renderLog(){
+  const content=document.getElementById('content');
+  content.innerHTML=`<div style="text-align:center;padding:40px;color:var(--text3)">⏳ جارٍ التحميل...</div>`;
+  if(!window.$fbReady||!window.$db){
+    content.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">Firebase غير متصل</div>`;
+    return;
+  }
+  try{
+    const q=window.$fb.query(
+      window.$fb.collection(window.$db,'violations'),
+      window.$fb.where('createdBy','==',sess.id),
+      window.$fb.orderBy('createdAt','desc')
+    );
+    const snap=await window.$fb.getDocs(q);
+    const viols=snap.docs.map(d=>({id:d.id,...d.data()}));
+    const degBg={1:'#EBF0FF',2:'#E8F9F1',3:'#FFF5E6',4:'#FEF2F2'};
+    const degCl={1:'#1A56DB',2:'#0A7A4A',3:'#B05E0A',4:'#B91C1C'};
+    content.innerHTML=`<div class="card">
+      <div class="card-header"><div class="card-title">سجل مخالفاتي</div><span style="font-size:12px;color:var(--text3)">${viols.length} مخالفة</span></div>
+      ${viols.length===0?`<div style="padding:40px;text-align:center;color:var(--text3)">لا توجد مخالفات مسجلة بعد</div>`:`
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>الطالب</th><th>الفصل</th><th>المخالفة</th><th>الدرجة</th><th>التكرار</th><th>الحالة</th><th>التاريخ</th></tr></thead>
+          <tbody>${viols.map(v=>`<tr>
+            <td style="font-weight:600">${v.studentName||'—'}</td>
+            <td>${CLASSES_LABEL[v.classId]||v.classId||'—'}</td>
+            <td style="max-width:180px">${v.type||'—'}</td>
+            <td><span style="display:inline-flex;width:26px;height:26px;border-radius:7px;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:${degBg[v.degree]||'#eee'};color:${degCl[v.degree]||'#333'}">${v.degree}</span></td>
+            <td><span class="chip chip-${v.repeat==='third'?'red':v.repeat==='second'?'amber':'navy'}">${v.repeat==='first'?'أول':v.repeat==='second'?'ثاني':'ثالث+'}</span></td>
+            <td><span class="chip chip-${v.status==='raised_supervisor'?'amber':v.status==='saved'?'green':'blue'}">${v.status==='raised_supervisor'?'مرفوع':v.status==='saved'?'محفوظ':'معالج'}</span></td>
+            <td style="font-size:11px;color:var(--text3)">${v.date||'—'}</td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>`}
+    </div>`;
+  }catch(e){
+    content.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;
+  }
+}
+
+// ── Toast & utils ─────────────────────────────────────────────
+function toast(msg,type=''){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='show'+(type?' '+type:'');
+  clearTimeout(el._t); el._t=setTimeout(()=>el.className='',3500);
+}
+function logout(){
+  sessionStorage.removeItem('sbs_user');
+  window.location.href='login.html';
+}
+
+// ── Init ──────────────────────────────────────────────────────
+loadAtt();
+document.getElementById('tb-sub').textContent='فصل '+( CLASSES_LABEL[document.getElementById('cls-sel').value]||'') + ' — ' + todayStr;
+</script>
+</body>
+</html>

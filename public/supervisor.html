@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شاشة المشرف | نظام متابعة السلوك</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0B2545;--navy2:#163A6B;--bg:#F0F2F8;--surface:#fff;--surface2:#F5F7FC;--surface3:#ECEEF7;--border:#DDE1F0;--border2:#C8CEDF;--text1:#0B1A2E;--text2:#4A5578;--text3:#8892B0;--blue:#1A56DB;--blue-l:#EBF0FF;--green:#0A7A4A;--green-l:#E8F9F1;--red:#B91C1C;--red-l:#FEF2F2;--amber:#B05E0A;--amber-l:#FFF5E6;--purple:#5B21B6;--purple-l:#F2EEFF;--orange:#C2410C;--orange-l:#FFF7ED;--r:10px;--r-sm:6px;--sh:0 2px 12px rgba(11,37,69,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text1);font-size:14px;min-height:100vh;display:flex}
+.sb{width:230px;flex-shrink:0;background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;right:0;bottom:0;z-index:100}
+.sb-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.sb-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#C2410C,#EA580C);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sb-logo-name{font-size:12px;font-weight:700;color:white}
+.sb-logo-sub{font-size:10px;color:rgba(255,255,255,.45);margin-top:1px}
+.sb-user{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px}
+.sb-av{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#FDBA74;flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:600;color:white}
+.sb-urole{font-size:11px;color:rgba(255,255,255,.5)}
+.sb-nav{flex:1;padding:8px;overflow-y:auto}
+.sb-sec{margin-bottom:14px}
+.sb-sec-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.3);padding:0 8px 5px;letter-spacing:1px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:rgba(255,255,255,.6);font-size:13px;font-weight:500;transition:all .15s;margin-bottom:2px;position:relative}
+.sb-item:hover{background:rgba(255,255,255,.08);color:white}
+.sb-item.active{background:rgba(255,255,255,.12);color:white}
+.sb-item.active::before{content:'';position:absolute;right:0;top:6px;bottom:6px;width:3px;background:#FDBA74;border-radius:0 3px 3px 0}
+.sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.sb-badge{margin-right:auto;background:var(--red);color:white;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px}
+.sb-footer{padding:10px;border-top:1px solid rgba(255,255,255,.07)}
+.sb-logout{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;color:rgba(255,255,255,.5);font-size:13px;transition:all .15s}
+.sb-logout:hover{color:#FC8181;background:rgba(252,129,129,.08)}
+.main{margin-right:230px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 1px 4px rgba(11,37,69,.06)}
+.tb-left h1{font-size:15px;font-weight:700}
+.tb-left p{font-size:11px;color:var(--text3);margin-top:2px}
+.tb-right{display:flex;align-items:center;gap:8px}
+.tb-btn{width:34px;height:34px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text2);transition:all .15s}
+.tb-btn:hover{background:var(--navy);color:white;border-color:var(--navy)}
+.content{padding:20px 24px;flex:1}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.card-header{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-title{font-size:14px;font-weight:700}
+.card-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.stat::after{content:'';position:absolute;top:0;right:0;width:4px;height:100%}
+.stat.red::after{background:var(--red)}.stat.amber::after{background:var(--amber)}.stat.blue::after{background:var(--blue)}.stat.purple::after{background:var(--purple)}.stat.green::after{background:var(--green)}
+.stat-icon{font-size:18px;margin-bottom:6px}
+.stat-lbl{font-size:11px;color:var(--text2);font-weight:500;margin-bottom:4px}
+.stat-val{font-size:26px;font-weight:800;line-height:1}
+.stat-sub{font-size:10px;color:var(--text3);margin-top:3px}
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface)}
+.tab{padding:11px 16px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.tab:hover{color:var(--text1)}
+.tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+.tc{background:var(--red);color:white;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px}
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{background:var(--surface3);padding:9px 14px;font-size:11px;font-weight:600;color:var(--text2);text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl td{padding:9px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:var(--surface2)}
+.chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.chip-red{background:var(--red-l);color:var(--red)}
+.chip-amber{background:var(--amber-l);color:var(--amber)}
+.chip-green{background:var(--green-l);color:var(--green)}
+.chip-blue{background:var(--blue-l);color:var(--blue)}
+.chip-purple{background:var(--purple-l);color:var(--purple)}
+.chip-navy{background:#E8EDF7;color:var(--navy)}
+.chip-orange{background:var(--orange-l);color:var(--orange)}
+.chip-new{background:var(--red-l);color:var(--red);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+.btn{padding:8px 16px;border-radius:var(--r-sm);font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:6px}
+.btn-navy{background:var(--navy);color:white}
+.btn-navy:hover{background:var(--navy2)}
+.btn-purple{background:var(--purple);color:white}
+.btn-purple:hover{background:#4c1d95}
+.btn-green{background:var(--green);color:white}
+.btn-green:hover{background:#076b3c}
+.btn-outline{background:var(--surface);color:var(--text2);border:1.5px solid var(--border2)}
+.btn-outline:hover{background:var(--surface2);border-color:var(--navy);color:var(--navy)}
+.btn-sm{padding:5px 12px;font-size:11px}
+.btn-row{display:flex;gap:7px;margin-top:10px}
+.form-group{margin-bottom:12px}
+.form-lbl{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;display:block}
+.form-ctrl{width:100%;padding:8px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--surface2);font-family:'Cairo',sans-serif;font-size:13px;color:var(--text1);outline:none;direction:rtl;transition:all .15s}
+.form-ctrl:focus{border-color:var(--navy2);background:white;box-shadow:0 0 0 3px rgba(11,37,69,.1)}
+.form-ta{width:100%;padding:8px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--surface2);font-family:'Cairo',sans-serif;font-size:13px;color:var(--text1);outline:none;direction:rtl;resize:none;min-height:65px;transition:all .15s}
+.form-ta:focus{border-color:var(--navy2);background:white}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.deg-pills{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.dp{padding:7px 4px;border-radius:var(--r-sm);border:1.5px solid var(--border2);text-align:center;cursor:pointer;transition:all .15s;font-size:11px;font-weight:700;color:var(--text2);background:var(--surface2)}
+.dp span{font-size:17px;display:block;margin-bottom:2px}
+.dp.d1{background:var(--blue-l);border-color:var(--blue);color:var(--blue)}
+.dp.d2{background:var(--green-l);border-color:var(--green);color:var(--green)}
+.dp.d3{background:var(--amber-l);border-color:var(--amber);color:var(--amber)}
+.dp.d4{background:var(--red-l);border-color:var(--red);color:var(--red)}
+.vcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;transition:all .15s}
+.vcard:hover{border-color:var(--border2);box-shadow:var(--sh)}
+.vcard-header{display:flex;align-items:flex-start;gap:10px}
+.deg-badge{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.db1{background:var(--blue-l);color:var(--blue)}.db2{background:var(--green-l);color:var(--green)}.db3{background:var(--amber-l);color:var(--amber)}.db4{background:var(--red-l);color:var(--red)}
+.vcard-name{font-size:14px;font-weight:700}
+.vcard-meta{font-size:12px;color:var(--text2);margin-top:2px}
+.vcard-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.modal-ov{position:fixed;inset:0;background:rgba(11,25,46,.55);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-ov.open{display:flex}
+.modal{background:var(--surface);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:500px;max-width:100%;max-height:90vh;overflow-y:auto;animation:fu .2s ease}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.mh{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
+.mt{font-size:16px;font-weight:700}.ms{font-size:12px;color:var(--text2);margin-top:3px}
+.mx{cursor:pointer;color:var(--text3);font-size:18px;padding:2px 6px;border-radius:5px;line-height:1;transition:all .15s}
+.mx:hover{background:var(--surface2);color:var(--text1)}
+.mb{padding:16px 22px}
+.mf{padding:12px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.info-box{background:var(--blue-l);border:1px solid #BFCFFE;border-radius:var(--r-sm);padding:10px 14px;font-size:12px;color:var(--blue);line-height:1.7;margin-bottom:14px}
+.warn-box{background:var(--amber-l);border:1px solid #FDE68A;border-radius:var(--r-sm);padding:10px 14px;font-size:12px;color:var(--amber);line-height:1.7;margin-bottom:14px}
+#toast{position:fixed;bottom:20px;left:20px;background:var(--navy);color:white;padding:11px 18px;border-radius:var(--r-sm);font-size:13px;font-weight:500;box-shadow:0 8px 24px rgba(11,37,69,.3);z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;max-width:340px}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.ok{background:var(--green)}
+#toast.err{background:var(--red)}
+@media(max-width:900px){.sb{display:none}.main{margin-right:0}.stats-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,doc,addDoc,setDoc,getDoc,getDocs,updateDoc,query,where,orderBy,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyC3aj0-1niPU738buidi_7qJq_XzJ143yo",authDomain:"student-behavior-7bd27.firebaseapp.com",projectId:"student-behavior-7bd27",storageBucket:"student-behavior-7bd27.firebasestorage.app",messagingSenderId:"401144670363",appId:"1:401144670363:web:7b6cda0938be4aa763fe3e"});
+const db=getFirestore(app);
+window.$db=db;window.$fb={collection,doc,addDoc,setDoc,getDoc,getDocs,updateDoc,query,where,orderBy,serverTimestamp};window.$fbReady=true;
+</script>
+</head>
+<body>
+<aside class="sb">
+  <div class="sb-logo"><div class="sb-logo-icon">🛡️</div><div><div class="sb-logo-name">نظام المتابعة</div><div class="sb-logo-sub">الطلابية السلوكية</div></div></div>
+  <div class="sb-user"><div class="sb-av" id="sb-av">م</div><div><div class="sb-uname" id="sb-name">المشرف</div><div class="sb-urole">مشرف الطلاب</div></div></div>
+  <nav class="sb-nav">
+    <div class="sb-sec">
+      <div class="sb-sec-lbl">المتابعة</div>
+      <div class="sb-item active" id="sbt-inbox"  onclick="switchTab('inbox')"><span class="sb-icon">📥</span>الرفوعات الواردة<span class="sb-badge" id="badge-inbox">0</span></div>
+      <div class="sb-item"        id="sbt-late"   onclick="switchTab('late')"><span class="sb-icon">⏱️</span>سجل التأخير</div>
+      <div class="sb-item"        id="sbt-own"    onclick="switchTab('own')"><span class="sb-icon">🔍</span>مخالفاتي</div>
+      <div class="sb-item"        id="sbt-reports"onclick="switchTab('reports')"><span class="sb-icon">📊</span>التقارير</div>
+    </div>
+  </nav>
+  <div class="sb-footer"><div class="sb-logout" onclick="logout()"><span class="sb-icon">🚪</span>تسجيل الخروج</div></div>
+</aside>
+<div class="main">
+  <div class="topbar">
+    <div class="tb-left"><h1 id="tb-title">الرفوعات الواردة</h1><p id="tb-sub"></p></div>
+    <div class="tb-right"><div class="tb-btn" onclick="refreshCurrent()">🔄</div></div>
+  </div>
+  <div class="content" id="content"><div style="text-align:center;padding:50px;color:var(--text3)">⏳ جارٍ التحميل...</div></div>
+</div>
+
+<!-- Escalate Modal -->
+<div class="modal-ov" id="modal-esc"><div class="modal">
+  <div class="mh"><div><div class="mt">📤 إحالة للأخصائي الاجتماعي</div><div class="ms">سيتمكن الأخصائي من رؤية كامل السجل</div></div><div class="mx" onclick="closeModal('modal-esc')">✕</div></div>
+  <div class="mb">
+    <div class="info-box" id="esc-preview"></div>
+    <div class="form-group"><label class="form-lbl">سبب الإحالة</label><textarea class="form-ta" id="esc-reason" placeholder="اكتب سبب الإحالة للأخصائي..."></textarea></div>
+    <div class="form-group"><label class="form-lbl">درجة الأولوية</label>
+      <select class="form-ctrl" id="esc-priority"><option value="normal">عادية</option><option value="high">مرتفعة</option><option value="urgent">عاجلة</option></select>
+    </div>
+  </div>
+  <div class="mf"><button class="btn btn-outline" onclick="closeModal('modal-esc')">إلغاء</button><button class="btn btn-purple" onclick="confirmEsc()">✓ إحالة للأخصائي الاجتماعي</button></div>
+</div></div>
+
+<!-- Own violation modal -->
+<div class="modal-ov" id="modal-own"><div class="modal">
+  <div class="mh"><div><div class="mt">🔍 رصد مخالفة جديدة</div><div class="ms">مخالفة رصدتها بشكل مستقل</div></div><div class="mx" onclick="closeModal('modal-own')">✕</div></div>
+  <div class="mb">
+    <div class="form-grid-2" style="margin-bottom:10px">
+      <div class="form-group"><label class="form-lbl">الفصل</label>
+        <select class="form-ctrl" id="own-cls" onchange="loadClsStudents()">
+          <option value="5-1">الخامس—1</option><option value="5-2">الخامس—2</option><option value="5-3">الخامس—3</option>
+          <option value="5-4">الخامس—4</option><option value="5-5">الخامس—5</option><option value="5-6">الخامس—6</option>
+          <option value="5-7">الخامس—7</option><option value="5-8">الخامس—8</option><option value="5-9">الخامس—9</option>
+          <option value="5-10">الخامس—10</option><option value="6-1">السادس—1</option><option value="6-2">السادس—2</option>
+          <option value="6-3">السادس—3</option><option value="6-4">السادس—4</option><option value="6-5">السادس—5</option>
+          <option value="6-6">السادس—6</option><option value="6-7">السادس—7</option><option value="6-8">السادس—8</option>
+          <option value="6-9">السادس—9</option><option value="6-10">السادس—10</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-lbl">الطالب</label><select class="form-ctrl" id="own-st"><option>جارٍ التحميل...</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-lbl">درجة المخالفة</label>
+      <div class="deg-pills" id="own-deg-pills">
+        <div class="dp" onclick="selOwnDeg(1)"><span>١</span>الأولى</div>
+        <div class="dp" onclick="selOwnDeg(2)"><span>٢</span>الثانية</div>
+        <div class="dp" onclick="selOwnDeg(3)"><span>٣</span>الثالثة</div>
+        <div class="dp" onclick="selOwnDeg(4)"><span>٤</span>الرابعة</div>
+      </div>
+    </div>
+    <div class="form-group" id="own-type-grp" style="display:none"><label class="form-lbl">نوع المخالفة</label><select class="form-ctrl" id="own-type"></select></div>
+    <div class="form-group"><label class="form-lbl">ملاحظات</label><textarea class="form-ta" id="own-notes" placeholder="وصف الموقف..."></textarea></div>
+  </div>
+  <div class="mf">
+    <button class="btn btn-outline" onclick="closeModal('modal-own')">إلغاء</button>
+    <button class="btn btn-outline" onclick="saveOwn('save')">💾 حفظ</button>
+    <button class="btn btn-purple" onclick="saveOwn('raise')">📤 رفع للأخصائي</button>
+  </div>
+</div></div>
+<div id="toast"></div>
+<script>
+const sess=JSON.parse(sessionStorage.getItem('sbs_user')||'null');
+if(!sess||sess.role!=='supervisor'){window.location.href='login.html';throw new Error('Not authorized');}
+document.getElementById('sb-av').textContent=(sess.name||'').charAt(0)||'م';
+document.getElementById('sb-name').textContent=sess.name||'المشرف';
+
+const VIOLS={1:['التأخر عن الحصة','النوم داخل الفصل','تناول الطعام','المقاطعة'],2:['هاتف جوال','هروب من الحصة','شجار لفظي','عدم الواجبات'],3:['هروب من المدرسة','إساءة أدب مع معلم','مشاجرة بالأيدي','رفض قرار إداري'],4:['حيازة مخدرات','حيازة أسلحة','تحرش','تزوير']};
+const TODAYSTR=new Date().toISOString().split('T')[0];
+const CLSLBL={'5-1':'خامس—1','5-2':'خامس—2','5-3':'خامس—3','5-4':'خامس—4','5-5':'خامس—5','5-6':'خامس—6','5-7':'خامس—7','5-8':'خامس—8','5-9':'خامس—9','5-10':'خامس—10','6-1':'سادس—1','6-2':'سادس—2','6-3':'سادس—3','6-4':'سادس—4','6-5':'سادس—5','6-6':'سادس—6','6-7':'سادس—7','6-8':'سادس—8','6-9':'سادس—9','6-10':'سادس—10'};
+const DEGBG={1:'#EBF0FF',2:'#E8F9F1',3:'#FFF5E6',4:'#FEF2F2'};
+const DEGCL={1:'#1A56DB',2:'#0A7A4A',3:'#B05E0A',4:'#B91C1C'};
+const DEGNM={1:'١',2:'٢',3:'٣',4:'٤'};
+let _curTab='inbox',_escViolId=null,_ownDeg=0;
+
+function switchTab(tab){
+  _curTab=tab;
+  ['inbox','late','own','reports'].forEach(t=>{const el=document.getElementById('sbt-'+t);if(el)el.classList.toggle('active',t===tab);});
+  const titles={inbox:'الرفوعات الواردة',late:'سجل التأخير',own:'مخالفاتي',reports:'التقارير'};
+  document.getElementById('tb-title').textContent=titles[tab]||tab;
+  if(tab==='inbox')loadInbox();else if(tab==='late')loadLate();else if(tab==='own')loadOwn();else if(tab==='reports')loadReports();
+}
+function refreshCurrent(){switchTab(_curTab);}
+
+async function loadInbox(){
+  const el=document.getElementById('content');
+  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)">⏳ جارٍ التحميل...</div>';
+  if(!window.$fbReady){el.innerHTML='<div class="card" style="padding:30px;text-align:center;color:var(--red)">Firebase غير متصل</div>';return;}
+  try{
+    const q=window.$fb.query(window.$fb.collection(window.$db,'violations'),window.$fb.where('status','==','raised_supervisor'),window.$fb.orderBy('createdAt','desc'));
+    const snap=await window.$fb.getDocs(q);
+    const viols=snap.docs.map(d=>({id:d.id,...d.data()}));
+    document.getElementById('badge-inbox').textContent=viols.length||'0';
+    const todayV=viols.filter(v=>v.date===TODAYSTR).length;
+    const deg4=viols.filter(v=>v.degree===4).length;
+    document.getElementById('tb-sub').textContent=`${viols.length} رفع مرسل — ${todayV} اليوم`;
+    if(viols.length===0){el.innerHTML=`<div class="card" style="padding:40px;text-align:center"><div style="font-size:36px;margin-bottom:12px">✅</div><div style="font-size:15px;font-weight:700">لا توجد رفوعات جديدة</div></div>`;return;}
+    el.innerHTML=`
+      <div class="stats-row">
+        <div class="stat red"><div class="stat-icon">📥</div><div class="stat-lbl">إجمالي الرفوعات</div><div class="stat-val" style="color:var(--red)">${viols.length}</div></div>
+        <div class="stat amber"><div class="stat-icon">📅</div><div class="stat-lbl">رفوعات اليوم</div><div class="stat-val" style="color:var(--amber)">${todayV}</div></div>
+        <div class="stat purple"><div class="stat-icon">🔴</div><div class="stat-lbl">درجة رابعة</div><div class="stat-val" style="color:var(--purple)">${deg4}</div></div>
+        <div class="stat blue"><div class="stat-icon">👥</div><div class="stat-lbl">معلمون مُبلّغون</div><div class="stat-val" style="color:var(--blue)">${new Set(viols.map(v=>v.createdBy)).size}</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">${viols.map(v=>renderViolCard(v)).join('')}</div>`;
+  }catch(e){el.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;}
+}
+
+function renderViolCard(v){
+  return `<div class="vcard" id="vc-${v.id}">
+    <div class="vcard-header">
+      <div class="deg-badge db${v.degree}">${DEGNM[v.degree]}</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div class="vcard-name">${v.studentName||v.studentId}</div>
+          <span class="chip chip-new">جديد</span>
+          ${v.degree===4?'<span class="chip chip-red">⚠️ خطورة عالية</span>':''}
+          <span style="font-size:11px;color:var(--text3);margin-right:auto">${v.date||''}</span>
+        </div>
+        <div class="vcard-meta">${v.type} &nbsp;·&nbsp; ${v.repeat==='first'?'أول مرة':v.repeat==='second'?'ثاني مرة':'ثالث+'}</div>
+        <div class="vcard-chips">
+          <span class="chip chip-navy">${CLSLBL[v.classId]||v.classId||'—'}</span>
+          <span class="chip chip-blue">درجة ${v.degree==='1'||v.degree===1?'الأولى':v.degree===2?'الثانية':v.degree===3?'الثالثة':'الرابعة'}</span>
+          <span style="font-size:11px;color:var(--text3)">👨‍🏫 ${v.createdByName||'معلم'}</span>
+        </div>
+        ${v.notes?`<div style="font-size:12px;color:var(--text2);margin-top:6px;background:var(--surface3);padding:6px 10px;border-radius:6px">${v.notes}</div>`:''}
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-green btn-sm" onclick="handleViol('${v.id}')">✓ تمت المعالجة</button>
+      <button class="btn btn-purple btn-sm" onclick="openEsc('${v.id}','${v.studentName||v.studentId}','${v.type}',${v.degree})">📤 إحالة للأخصائي</button>
+    </div>
+  </div>`;
+}
+
+async function handleViol(id){
+  try{
+    await window.$fb.updateDoc(window.$fb.doc(window.$db,'violations',id),{status:'handled_supervisor',handledBy:sess.id,handledByName:sess.name,handledAt:window.$fb.serverTimestamp()});
+    document.getElementById('vc-'+id)?.remove();
+    const badge=document.getElementById('badge-inbox');
+    if(badge)badge.textContent=Math.max(0,(parseInt(badge.textContent)||1)-1);
+    toast('✅ تمت المعالجة وحُفظت في السجل','ok');
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+function openEsc(id,name,type,degree){
+  _escViolId=id;
+  document.getElementById('esc-preview').innerHTML=`<strong>الطالب:</strong> ${name}<br><strong>المخالفة:</strong> ${type}<br><strong>الدرجة:</strong> ${degree}`;
+  document.getElementById('esc-reason').value='';
+  document.getElementById('modal-esc').classList.add('open');
+}
+
+async function confirmEsc(){
+  if(!_escViolId)return;
+  const reason=document.getElementById('esc-reason').value;
+  const priority=document.getElementById('esc-priority').value;
+  try{
+    const vSnap=await window.$fb.getDoc(window.$fb.doc(window.$db,'violations',_escViolId));
+    const v=vSnap.data();
+    await window.$fb.updateDoc(window.$fb.doc(window.$db,'violations',_escViolId),{status:'raised_social',raisedTo:'social',raisedAt:window.$fb.serverTimestamp(),raisedBySupName:sess.name,escalationReason:reason});
+    await window.$fb.addDoc(window.$fb.collection(window.$db,'cases'),{
+      studentId:v.studentId,studentName:v.studentName,classId:v.classId,
+      stage:'social',status:'open',priority,violationId:_escViolId,
+      degree:v.degree,type:v.type,escalationReason:reason,
+      referredBy:sess.name,referredByRole:'supervisor',
+      timeline:[{actor:sess.name,role:'supervisor',action:'فتح الحالة وإحالة للأخصائي الاجتماعي',notes:reason,time:new Date().toISOString()}],
+      createdAt:window.$fb.serverTimestamp()
+    });
+    closeModal('modal-esc');
+    toast('📤 تم إحالة الحالة للأخصائي الاجتماعي','ok');
+    loadInbox();
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+async function loadLate(){
+  const el=document.getElementById('content');
+  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)">⏳ جارٍ التحميل...</div>';
+  try{
+    const lates=window.$fbReady?(await window.$fb.getDocs(window.$fb.query(window.$fb.collection(window.$db,'lates'),window.$fb.where('date','==',TODAYSTR)))).docs.map(d=>({id:d.id,...d.data()})):[];
+    el.innerHTML=`
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header"><div class="card-title">تسجيل تأخير جديد</div></div>
+        <div style="padding:16px 18px">
+          <div class="form-grid-2" style="margin-bottom:10px">
+            <div class="form-group"><label class="form-lbl">الفصل</label>
+              <select class="form-ctrl" id="late-cls">
+                ${Object.entries(CLSLBL).map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group"><label class="form-lbl">اسم الطالب</label><input class="form-ctrl" id="late-name" placeholder="اكتب الاسم"></div>
+          </div>
+          <div class="form-group"><label class="form-lbl">وقت الوصول</label><input type="time" class="form-ctrl" id="late-time" value="07:45" style="width:160px"></div>
+          <button class="btn btn-navy" onclick="addLate()">+ تسجيل التأخير</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">تأخيرات اليوم</div><span style="font-size:12px;color:var(--text3)">${TODAYSTR}</span></div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>#</th><th>الطالب</th><th>الفصل</th><th>وقت الوصول</th><th>دقائق التأخير</th></tr></thead>
+            <tbody>${lates.length===0?`<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text3)">لا يوجد تأخير مسجل اليوم</td></tr>`:
+            lates.map((l,i)=>`<tr>
+              <td style="color:var(--text3)">${i+1}</td>
+              <td style="font-weight:600">${l.studentName||'—'}</td>
+              <td>${CLSLBL[l.classId]||l.classId||'—'}</td>
+              <td style="font-weight:600">${l.arrivalTime||'—'}</td>
+              <td><span class="chip chip-${l.minutes>20?'red':l.minutes>10?'amber':'navy'}">${l.minutes} د</span></td>
+            </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+  }catch(e){el.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;}
+}
+
+async function addLate(){
+  const cls=document.getElementById('late-cls').value;
+  const name=document.getElementById('late-name').value.trim();
+  const time=document.getElementById('late-time').value||'07:45';
+  if(!name){toast('⚠️ أدخل اسم الطالب','err');return;}
+  const[h,m]=time.split(':').map(Number);
+  const minutes=Math.max(0,(h*60+m)-(7*60+30));
+  try{
+    await window.$fb.addDoc(window.$fb.collection(window.$db,'lates'),{studentName:name,classId:cls,arrivalTime:time,minutes,date:TODAYSTR,recordedBy:sess.id,recordedByName:sess.name,createdAt:window.$fb.serverTimestamp()});
+    toast(`✅ تم تسجيل تأخير ${name} — ${minutes} دقيقة`,'ok');
+    document.getElementById('late-name').value='';
+    loadLate();
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+async function loadOwn(){
+  const el=document.getElementById('content');
+  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)">⏳ جارٍ التحميل...</div>';
+  try{
+    const viols=window.$fbReady?(await window.$fb.getDocs(window.$fb.query(window.$fb.collection(window.$db,'violations'),window.$fb.where('createdBy','==',sess.id),window.$fb.orderBy('createdAt','desc')))).docs.map(d=>({id:d.id,...d.data()})):[];
+    el.innerHTML=`
+      <div style="margin-bottom:14px"><button class="btn btn-navy" onclick="document.getElementById('modal-own').classList.add('open');loadClsStudents()">+ رصد مخالفة جديدة</button></div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">مخالفاتي المرصودة</div><span style="font-size:12px;color:var(--text3)">${viols.length}</span></div>
+        ${viols.length===0?`<div style="padding:40px;text-align:center;color:var(--text3)">لم تسجّل أي مخالفات بعد</div>`:`
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>الطالب</th><th>الفصل</th><th>المخالفة</th><th>الدرجة</th><th>الحالة</th><th>التاريخ</th></tr></thead>
+          <tbody>${viols.map(v=>`<tr>
+            <td style="font-weight:600">${v.studentName||'—'}</td>
+            <td>${CLSLBL[v.classId]||v.classId||'—'}</td>
+            <td style="max-width:160px">${v.type}</td>
+            <td><span style="display:inline-flex;width:26px;height:26px;border-radius:7px;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:${DEGBG[v.degree]};color:${DEGCL[v.degree]}">${v.degree}</span></td>
+            <td><span class="chip chip-${v.status==='raised_social'?'purple':v.status==='handled_supervisor'?'green':'amber'}">${v.status==='raised_social'?'محال اجتماعي':v.status==='handled_supervisor'?'معالج':'مرصود'}</span></td>
+            <td style="font-size:11px;color:var(--text3)">${v.date||'—'}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>`}
+      </div>`;
+  }catch(e){el.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;}
+}
+
+async function loadClsStudents(){
+  const cls=document.getElementById('own-cls').value;
+  const sel=document.getElementById('own-st');
+  sel.innerHTML='<option>جارٍ التحميل...</option>';
+  if(!window.$fbReady){sel.innerHTML='<option>أدخل الاسم يدوياً</option>';return;}
+  try{
+    const q=window.$fb.query(window.$fb.collection(window.$db,'students'),window.$fb.where('classId','==',cls));
+    const snap=await window.$fb.getDocs(q);
+    const stds=snap.docs.map(d=>({id:d.id,...d.data()}));
+    sel.innerHTML=stds.length?stds.map(s=>`<option value="${s.id}">${s.name}</option>`).join(''):'<option>لا يوجد طلاب — أدخل الاسم يدوياً</option>';
+  }catch(e){sel.innerHTML='<option>خطأ في التحميل</option>';}
+}
+
+let _ownDegN=0;
+function selOwnDeg(d){
+  _ownDegN=d;
+  document.querySelectorAll('#own-deg-pills .dp').forEach((el,i)=>el.className='dp'+(i+1===d?` d${d}`:''));
+  document.getElementById('own-type-grp').style.display='block';
+  document.getElementById('own-type').innerHTML=VIOLS[d].map(v=>`<option>${v}</option>`).join('');
+}
+
+async function saveOwn(action){
+  const cls=document.getElementById('own-cls').value;
+  const stSel=document.getElementById('own-st');
+  const stId=stSel.value||'manual';
+  const stName=stSel.options[stSel.selectedIndex]?.text||'غير محدد';
+  if(!_ownDegN){toast('⚠️ اختر درجة المخالفة','err');return;}
+  const type=document.getElementById('own-type').value||'مخالفة سلوكية';
+  const notes=document.getElementById('own-notes').value;
+  const data={studentId:stId,studentName:stName,classId:cls,degree:_ownDegN,type,notes,repeat:'first',status:action==='raise'?'raised_social':'saved',createdBy:sess.id,createdByName:sess.name,createdByRole:'supervisor',date:TODAYSTR};
+  try{
+    await window.$fb.addDoc(window.$fb.collection(window.$db,'violations'),{...data,createdAt:window.$fb.serverTimestamp()});
+    if(action==='raise'){
+      await window.$fb.addDoc(window.$fb.collection(window.$db,'cases'),{studentId:stId,studentName:stName,classId:cls,stage:'social',status:'open',priority:'normal',degree:_ownDegN,type,escalationReason:notes,referredBy:sess.name,referredByRole:'supervisor',timeline:[{actor:sess.name,role:'supervisor',action:'إحالة للأخصائي الاجتماعي',notes,time:new Date().toISOString()}],createdAt:window.$fb.serverTimestamp()});
+    }
+    closeModal('modal-own');
+    toast(action==='raise'?'📤 تم رفع المخالفة للأخصائي':'✅ تم حفظ المخالفة','ok');
+    if(action==='save')loadOwn();
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+async function loadReports(){
+  const el=document.getElementById('content');
+  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)">⏳ جارٍ التحميل...</div>';
+  try{
+    const[violsSnap,latesSnap]=await Promise.all([
+      window.$fb.getDocs(window.$fb.collection(window.$db,'violations')),
+      window.$fb.getDocs(window.$fb.query(window.$fb.collection(window.$db,'lates'),window.$fb.where('date','==',TODAYSTR)))
+    ]);
+    const viols=violsSnap.docs.map(d=>d.data());
+    const todayV=viols.filter(v=>v.date===TODAYSTR);
+    const byDeg=[1,2,3,4].map(d=>viols.filter(v=>v.degree===d).length);
+    const todayByDeg=[1,2,3,4].map(d=>todayV.filter(v=>v.degree===d).length);
+    el.innerHTML=`
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button class="btn btn-navy" id="rbtn-daily" onclick="showRepType('daily')">📅 يومي</button>
+        <button class="btn btn-outline" id="rbtn-monthly" onclick="showRepType('monthly')">📆 شهري</button>
+      </div>
+      <div id="rep-daily">
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">التقرير اليومي</div><div class="card-sub">${TODAYSTR} — ${sess.name}</div></div>
+          <div style="display:flex;gap:7px">
+            <button class="btn btn-outline btn-sm" onclick="window.print()">🖨️ طباعة</button>
+            <button class="btn btn-navy btn-sm" onclick="shareReport('daily',${JSON.stringify({todayV:todayV.length,lates:latesSnap.size,byDeg:todayByDeg}).replace(/"/g,"'")})">📤 مشاركة مع المدير</button>
+          </div></div>
+          <div style="padding:16px 18px">
+            <div class="stats-row">
+              <div class="stat red"><div class="stat-lbl">مخالفات درجة 4</div><div class="stat-val" style="color:var(--red)">${todayByDeg[3]}</div></div>
+              <div class="stat amber"><div class="stat-lbl">مخالفات درجة 3</div><div class="stat-val" style="color:var(--amber)">${todayByDeg[2]}</div></div>
+              <div class="stat blue"><div class="stat-lbl">مخالفات 1-2</div><div class="stat-val" style="color:var(--blue)">${todayByDeg[0]+todayByDeg[1]}</div></div>
+              <div class="stat green"><div class="stat-lbl">تأخيرات اليوم</div><div class="stat-val" style="color:var(--green)">${latesSnap.size}</div></div>
+            </div>
+            ${[4,3,2,1].map(d=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+              <div class="deg-badge db${d}" style="flex-shrink:0">${d}</div>
+              <div style="flex:1;height:8px;background:var(--surface3);border-radius:4px;overflow:hidden">
+                <div style="height:8px;width:${Math.min(100,todayByDeg[d-1]*15)}%;background:${DEGCL[d]};border-radius:4px"></div>
+              </div>
+              <span style="font-size:13px;font-weight:700;min-width:18px">${todayByDeg[d-1]}</span>
+            </div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div id="rep-monthly" style="display:none">
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">التقرير الشهري</div><div class="card-sub">${new Date().toISOString().slice(0,7)} — ${sess.name}</div></div>
+          <button class="btn btn-navy btn-sm" onclick="shareReport('monthly',{total:${viols.length}})">📤 مشاركة مع المدير</button></div>
+          <div style="padding:16px 18px">
+            <div class="stats-row">
+              <div class="stat red"><div class="stat-lbl">إجمالي المخالفات</div><div class="stat-val" style="color:var(--red)">${viols.length}</div></div>
+              <div class="stat amber"><div class="stat-lbl">درجة ثالثة + رابعة</div><div class="stat-val" style="color:var(--amber)">${byDeg[2]+byDeg[3]}</div></div>
+              <div class="stat blue"><div class="stat-lbl">درجة أولى + ثانية</div><div class="stat-val" style="color:var(--blue)">${byDeg[0]+byDeg[1]}</div></div>
+              <div class="stat purple"><div class="stat-lbl">حالات محالة</div><div class="stat-val" style="color:var(--purple)">${viols.filter(v=>v.status==='raised_social').length}</div></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }catch(e){el.innerHTML=`<div class="card" style="padding:30px;text-align:center;color:var(--red)">خطأ: ${e.message}</div>`;}
+}
+
+function showRepType(type){
+  document.getElementById('rep-daily').style.display=type==='daily'?'':'none';
+  document.getElementById('rep-monthly').style.display=type==='monthly'?'':'none';
+  document.getElementById('rbtn-daily').className='btn '+(type==='daily'?'btn-navy':'btn-outline');
+  document.getElementById('rbtn-monthly').className='btn '+(type==='monthly'?'btn-navy':'btn-outline');
+}
+
+async function shareReport(type,data){
+  try{
+    await window.$fb.addDoc(window.$fb.collection(window.$db,'reports'),{type,data,month:new Date().toISOString().slice(0,7),createdAt:window.$fb.serverTimestamp(),createdBy:sess.id,createdByName:sess.name,visibleTo:['director','admin']});
+    toast('📤 تم مشاركة التقرير مع المدير','ok');
+  }catch(e){toast('❌ '+e.message,'err');}
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-ov').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');}));
+function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='show'+(type?' '+type:'');clearTimeout(el._t);el._t=setTimeout(()=>el.className='',3500);}
+function logout(){sessionStorage.removeItem('sbs_user');window.location.href='login.html';}
+
+// Init
+switchTab('inbox');
+</script>
+</body>
+</html>
